@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StatusBar } from "react-native";
+import { View, Text, StatusBar, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { LANGUAGES } from "../constants/languages";
@@ -36,6 +36,10 @@ export default function Index() {
             onPress={() => handleSelection(lang.key)}
           />
         ))}
+      </View>
+
+      <View style={styles.imageContainer}>
+        <Image source={require("../assets/images/marin-studing.png")} style={styles.image} />
       </View>
     </LinearGradient>
   );

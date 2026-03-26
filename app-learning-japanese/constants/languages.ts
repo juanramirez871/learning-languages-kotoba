@@ -30,7 +30,7 @@ export const LANGUAGES: Language[] = [
     accentColor: "#185FA5",
     badgeBg: "#B5D4F4",
     badgeText: "#0C447C",
-    image: require("../assets/images/usa-flag.jpg"),
+    image: require("../assets/images/england-flag.jpg"),
     tabs: [
       { id: "index", label: "Words", icon: "book-outline" },
       { id: "alphabet", label: "Alphabet", icon: "alphabetical" },

@@ -27,4 +27,16 @@ export const styles = StyleSheet.create({
   cardsContainer: {
     gap: 16,
   },
+  imageContainer: {
+    position: "absolute",
+    bottom: -30,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+  },
+  image: {
+    width: 300,
+    height: 300,
+    resizeMode: "contain",
+  },
 });
