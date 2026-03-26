@@ -1,12 +1,10 @@
+import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { useLocalSearchParams, Stack } from "expo-router";
 
-export default function Selection() {
-  const { selection } = useLocalSearchParams();
-
+export default function HiraganaScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Welcome {selection}</Text>
+      <Text style={styles.text}>平仮名 (Hiragana) Section</Text>
     </View>
   );
 }
@@ -19,7 +17,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   text: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
+    color: "#333",
   },
 });
