@@ -46,15 +46,22 @@ export default function LetterCard({
     );
 
   async function playSound() {
+    if (!soundSource) return;
     try {
-      if (sound) await sound.replayAsync()
-      else {
-        const { sound: newSound } = await Audio.Sound.createAsync(soundSource, {
-          volume: 1.0,
-        });
-        setSound(newSound);
-        await newSound.playAsync();
-      }
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        soundSource,
+        { shouldPlay: true, volume: 1.0 }
+      );
+      
+      if (sound) await sound.unloadAsync();
+      setSound(newSound);
+      
+      newSound.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded && status.didJustFinish) {
+          newSound.unloadAsync();
+          setSound(null);
+        }
+      });
     } catch (error) {
       console.log("Error playing sound:", error);
     }
