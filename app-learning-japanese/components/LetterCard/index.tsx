@@ -1,21 +1,57 @@
-import { ALPHABET, CARD_COLORS } from "../../constants/alphabetEnglish";
 import React, { useState, useEffect } from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { Audio } from "expo-av";
 import styles from "./styles";
 
-export default function LetterCard({ item, index }: { item: typeof ALPHABET[0]; index: number }) {
+interface LetterCardProps {
+  text: string;
+  subtitle: string;
+  rom?: string;
+  sound: any;
+  color: {
+    bg: string;
+    border: string;
+    letter: string;
+  };
+  style?: any;
+}
+
+export default function LetterCard({
+  text,
+  subtitle,
+  rom,
+  sound: soundSource,
+  color,
+  style,
+}: LetterCardProps) {
 
   const [pressed, setPressed] = useState(false);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const color = CARD_COLORS[index % CARD_COLORS.length];
+
+  if (!text)
+    return (
+      <TouchableOpacity
+        disabled
+        style={[
+          styles.card,
+          {
+            backgroundColor: "rgba(0,0,0,0.02)",
+            borderColor: "transparent",
+            shadowOpacity: 0,
+            elevation: 0,
+          },
+          style,
+        ]}
+      />
+    );
 
   async function playSound() {
     try {
-      if (sound) {
-        await sound.replayAsync();
-      } else {
-        const { sound: newSound } = await Audio.Sound.createAsync(item.sound, { volume: 1.0 });
+      if (sound) await sound.replayAsync()
+      else {
+        const { sound: newSound } = await Audio.Sound.createAsync(soundSource, {
+          volume: 1.0,
+        });
         setSound(newSound);
         await newSound.playAsync();
       }
@@ -45,10 +81,26 @@ export default function LetterCard({ item, index }: { item: typeof ALPHABET[0]; 
           borderColor: pressed ? color.letter : color.border,
           transform: [{ scale: pressed ? 0.95 : 1 }],
         },
+        style,
       ]}
     >
-      <Text style={[styles.letterText, { color: color.letter }]}>{item.letter}</Text>
-      <Text style={[styles.pronText, { color: color.letter }]}>{item.pronunciation}</Text>
+      <Text style={[styles.letterText, { color: color.letter }]}>{text}</Text>
+      {rom && (
+        <Text
+          style={[
+            styles.pronText,
+            {
+              color: color.letter,
+              fontSize: 9,
+              opacity: 0.8,
+              marginBottom: -2,
+            },
+          ]}
+        >
+          {rom}
+        </Text>
+      )}
+      <Text style={[styles.pronText, { color: color.letter }]}>{subtitle}</Text>
     </TouchableOpacity>
   );
 }

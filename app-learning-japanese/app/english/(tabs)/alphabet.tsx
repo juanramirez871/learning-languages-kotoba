@@ -7,7 +7,7 @@ import {
   FlatList,
   StatusBar,
 } from "react-native";
-import { ALPHABET } from "@/constants/alphabetEnglish";
+import { ALPHABET, CARD_COLORS } from "@/constants/alphabetEnglish";
 
 
 export default function AlphabetScreen() {
@@ -27,7 +27,15 @@ export default function AlphabetScreen() {
         contentContainerStyle={styles.grid}
         columnWrapperStyle={styles.row}
         showsVerticalScrollIndicator={false}
-        renderItem={({ item, index }) => <LetterCard item={item} index={index} />}
+        renderItem={({ item, index }) => (
+          <LetterCard
+            text={item.letter}
+            subtitle={item.pronunciation}
+            sound={item.sound}
+            color={CARD_COLORS[index % CARD_COLORS.length]}
+            style={{ width: "23%", paddingVertical: 10 }}
+          />
+        )}
       />
     </View>
   );

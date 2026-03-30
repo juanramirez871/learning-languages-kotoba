@@ -5,43 +5,10 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
   StatusBar,
 } from "react-native";
+import LetterCard from "@/components/LetterCard";
 
-
-
-function KanaCard({
-  kana,
-  rom,
-  colorIndex,
-}: {
-  kana: string;
-  rom: string;
-  colorIndex: number;
-}) {
-  const [pressed, setPressed] = useState(false);
-  const c = PALETTE[colorIndex % PALETTE.length];
-  if (!kana) return <View style={[styles.card, styles.cardEmpty]} />;
-  return (
-    <TouchableOpacity
-      activeOpacity={0.85}
-      onPressIn={() => setPressed(true)}
-      onPressOut={() => setPressed(false)}
-      style={[
-        styles.card,
-        {
-          backgroundColor: c.bg,
-          borderColor: pressed ? c.letter : c.border,
-          transform: [{ scale: pressed ? 0.94 : 1 }],
-        },
-      ]}
-    >
-      <Text style={[styles.kanaText, { color: c.letter }]}>{kana}</Text>
-      <Text style={[styles.romText, { color: c.letter }]}>{rom}</Text>
-    </TouchableOpacity>
-  );
-}
 
 function SectionHeader({
   title,
@@ -77,22 +44,24 @@ export default function HiraganaScreen() {
         </View>
 
         {/* 1. GOJUON */}
-        <View style={[styles.section, { height: "33%" }]} >
+        <View style={[styles.section, { height: "28%" }]} >
           <SectionHeader title="Gojuon" subtitle="Los 46 caracteres base" />
           <View style={styles.grid5}>
             {GOJUON.map((item, i) => (
-              <KanaCard
+              <LetterCard
                 key={i}
-                kana={item.kana}
-                rom={item.rom}
-                colorIndex={Math.floor(i / 5)}
+                text={item.kana}
+                subtitle={item.rom}
+                sound={item.sound}
+                color={PALETTE[Math.floor(i / 5) % PALETTE.length]}
+                style={{ width: "18%" }}
               />
             ))}
           </View>
         </View>
 
         {/* 2. SOKUON */}
-        <View style={[styles.section, { height: "13%" }]} >
+        <View style={[styles.section, { height: "12%" }]} >
         <SectionHeader
           title="Sokuon · っ"
           subtitle="Duplica la consonante siguiente"
@@ -107,39 +76,35 @@ export default function HiraganaScreen() {
           {SOKUON.map((s, i) => {
             const c = PALETTE[i % PALETTE.length];
             return (
-              <View
+              <LetterCard
                 key={i}
-                style={[
-                  styles.sokuonCard,
-                  { backgroundColor: c.bg, borderColor: c.border },
-                ]}
-              >
-                <Text style={[styles.sokuonWord, { color: c.letter }]}>
-                  {s.word}
-                </Text>
-                <Text style={[styles.sokuonRom, { color: c.letter }]}>
-                  {s.rom}
-                </Text>
-                <Text style={styles.sokuonMeaning}>{s.meaning}</Text>
-              </View>
+                text={s.word}
+                rom={s.rom}
+                subtitle={s.meaning}
+                sound={s.sound}
+                color={c}
+                style={{ width: "31.5%" }}
+              />
             );
           })}
         </View>
         </View>
 
         {/* 3. DAKUON */}
-        <View style={[styles.section, { height: "16%" }]} >
+        <View style={[styles.section, { height: "14%" }]} >
         <SectionHeader
           title="Dakuon · ゛゜"
           subtitle="Consonantes sonoras y semisordas"
         />
         <View style={styles.grid5}>
           {DAKUON.map((item, i) => (
-            <KanaCard
+            <LetterCard
               key={i}
-              kana={item.kana}
-              rom={item.rom}
-              colorIndex={Math.floor(i / 5)}
+              text={item.kana}
+              subtitle={item.rom}
+              sound={item.sound}
+              color={PALETTE[Math.floor(i / 5) % PALETTE.length]}
+              style={{ width: "18%" }}
             />
           ))}
         </View>
@@ -151,13 +116,15 @@ export default function HiraganaScreen() {
           title="Youon"
           subtitle="Combinaciones con や ゆ よ pequeños"
         />
-        <View style={styles.grid3}>
+        <View style={styles.grid4}>
           {YOUON.map((item, i) => (
-            <KanaCard
+            <LetterCard
               key={i}
-              kana={item.kana}
-              rom={item.rom}
-              colorIndex={Math.floor(i / 3)}
+              text={item.kana}
+              subtitle={item.rom}
+              sound={item.sound}
+              color={PALETTE[Math.floor(i / 4) % PALETTE.length]}
+              style={{ width: "23%" }}
             />
           ))}
         </View>
@@ -174,15 +141,16 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   section: {
-    gap: 10,
+    marginBottom: 20,
   },
   scroll: {
     paddingHorizontal: 16,
-    gap: 24,
+    paddingBottom: 20,
   },
   mainHeader: {
     paddingTop: 60,
     paddingHorizontal: 6,
+    marginBottom: 20,
   },
   eyebrow: {
     fontSize: 11,
@@ -203,6 +171,7 @@ const styles = StyleSheet.create({
     color: "#B07090",
   },
   sectionHeader: {
+    marginBottom: 10,
     paddingHorizontal: 4,
   },
   sectionTitleRow: {
@@ -227,44 +196,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 7,
-    alignContent: "flex-start",
   },
   grid3: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 7,
-    alignContent: "flex-start",
   },
-  card: {
-    width: "18%",
-    aspectRatio: 0.85,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 6,
-    shadowColor: "#993556",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  cardEmpty: {
-      backgroundColor: "rgba(153, 53, 86, 0.04)",
-      borderColor: "rgba(153, 53, 86, 0.04)",
-      borderStyle: "solid",
-      shadowOpacity: 0,
-      elevation: 0,
-    },
-  kanaText: {
-    fontSize: 22,
-    fontWeight: "800",
-  },
-  romText: {
-    fontSize: 10,
-    fontWeight: "500",
-    opacity: 0.65,
-    marginTop: 2,
+  grid4: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 7,
   },
   sokuonHint: {
     flexDirection: "row",
@@ -275,6 +216,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: "#F4C0D1",
     padding: 14,
+    marginBottom: 10,
   },
   sokuonKana: {
     fontSize: 36,
@@ -291,31 +233,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
-  },
-  sokuonCard: {
-    width: "47%",
-    borderRadius: 14,
-    borderWidth: 1.5,
-    padding: 14,
-    shadowColor: "#993556",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  sokuonWord: {
-    fontSize: 22,
-    fontWeight: "800",
-    marginBottom: 2,
-  },
-  sokuonRom: {
-    fontSize: 12,
-    fontWeight: "600",
-    opacity: 0.8,
-    marginBottom: 4,
-  },
-  sokuonMeaning: {
-    fontSize: 11,
-    color: "#B07090",
   },
 });
