@@ -37,21 +37,29 @@ export default function JapaneseWordsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Welcome to Japanese Words section!</Text>
+      <View style={styles.petSection}>
+        
+        <View style={styles.speechBubble}>
+          <Text style={styles.japaneseText}>パイナップル</Text>
+          <Text style={styles.romajiText}>painappuru</Text>
+          <View style={styles.divider} />
+          <Text style={styles.spanishText}>Piña</Text>
+        </View>
 
-      <TouchableOpacity
-        onPress={handlePress}
-        activeOpacity={0.9}
-        style={styles.petContainer}
-      >
-        <Image
-          source={isJumping ? PET_ANIMATIONS.jump[jumpFrame] : PET_ANIMATIONS.stay}
-          style={styles.image}
-          contentFit="contain"
-          transition={0}
-          cachePolicy="memory-disk"
-        />
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handlePress}
+          activeOpacity={0.9}
+          style={styles.petContainer}
+        >
+          <Image
+            source={isJumping ? PET_ANIMATIONS.jump[jumpFrame] : PET_ANIMATIONS.stay}
+            style={styles.image}
+            contentFit="contain"
+            transition={0}
+            cachePolicy="memory-disk"
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -63,15 +71,46 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
-  text: {
-    fontSize: 20,
+  petSection: {
+    position: "absolute",
+    bottom: 20,
+    alignItems: "center",
+  },
+  speechBubble: {
+    backgroundColor: "#ffffff",
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderRadius: 25,
+    alignItems: "center",
+    marginBottom: -100,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: "#f0f0f0",
+  },
+  japaneseText: {
+    fontSize: 24,
     fontWeight: "bold",
-    color: "#333",
-    marginTop: 60,
+    color: "#1a1a1a",
+    marginBottom: 2,
+  },
+  romajiText: {
+    fontSize: 14,
+    color: "#888",
+    fontStyle: "italic",
+    marginBottom: 8,
+  },
+  divider: {
+    width: "100%",
+    height: 1,
+    backgroundColor: "#eee",
+    marginBottom: 8,
+  },
+  spanishText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#ff6b6b",
   },
   petContainer: {
-    position: "absolute",
-    bottom: 0,
     width: 350,
     height: 350,
     justifyContent: "center",
