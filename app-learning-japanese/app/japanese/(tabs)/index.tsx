@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native
 import { Image } from "expo-image";
 import { PET_ANIMATIONS } from "@/constants/petAnimations";
 import words from "../../../constants/japaneseWords.json";
+import { createSound } from "@/utils/elevenlabs";
 
 export default function JapaneseWordsScreen() {
 
@@ -21,7 +22,10 @@ export default function JapaneseWordsScreen() {
   const showBubble = useCallback(() => {
 
     const randomIndex = Math.floor(Math.random() * words.length);
-    setCurrentWord(words[randomIndex]);
+    const selectedWord = words[randomIndex];
+    setCurrentWord(selectedWord);
+    createSound(selectedWord.pronounciation);
+
     Animated.spring(bubbleAnim, {
       toValue: 1,
       useNativeDriver: true,
