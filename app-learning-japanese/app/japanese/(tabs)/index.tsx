@@ -58,7 +58,7 @@ export default function JapaneseWordsScreen() {
         setIsJumping(false);
         setJumpFrame(0);
       }
-    }, 35);
+    }, 30);
   }, [isJumping, showBubble]);
 
   return (
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   },
   petSection: {
     position: "absolute",
-    bottom: 20,
+    bottom: -50,
     alignItems: "center",
   },
   speechBubble: {
