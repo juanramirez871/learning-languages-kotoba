@@ -1,13 +1,16 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
 import { Image } from "expo-image";
 import { PET_ANIMATIONS } from "@/constants/petAnimations";
+import words from "../../../constants/japaneseWords.json";
 
 export default function JapaneseWordsScreen() {
 
   const [isJumping, setIsJumping] = useState(false);
   const [jumpFrame, setJumpFrame] = useState(0);
+  const [currentWord, setCurrentWord] = useState<any>(null);
   const animationRef = useRef<any>(null);
+  const bubbleAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     return () => {
@@ -15,11 +18,34 @@ export default function JapaneseWordsScreen() {
     };
   }, []);
 
+  const showBubble = useCallback(() => {
+
+    const randomIndex = Math.floor(Math.random() * words.length);
+    setCurrentWord(words[randomIndex]);
+    Animated.spring(bubbleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      friction: 8,
+      tension: 40,
+    }).start();
+
+    setTimeout(() => {
+      Animated.timing(bubbleAnim, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }).start(() => {
+        setCurrentWord(null);
+      });
+    }, 3000);
+  }, [bubbleAnim]);
+
   const handlePress = useCallback(() => {
     if (isJumping) return;
 
     setIsJumping(true);
     setJumpFrame(0);
+    showBubble();
 
     let frame = 0;
     const totalFrames = PET_ANIMATIONS.jump.length;
@@ -33,18 +59,39 @@ export default function JapaneseWordsScreen() {
         setJumpFrame(0);
       }
     }, 35);
-  }, [isJumping]);
+  }, [isJumping, showBubble]);
 
   return (
     <View style={styles.container}>
       <View style={styles.petSection}>
-        
-        <View style={styles.speechBubble}>
-          <Text style={styles.japaneseText}>パイナップル</Text>
-          <Text style={styles.romajiText}>painappuru</Text>
-          <View style={styles.divider} />
-          <Text style={styles.spanishText}>Piña</Text>
-        </View>
+        {currentWord && (
+          <Animated.View
+            style={[
+              styles.speechBubble,
+              {
+                opacity: bubbleAnim,
+                transform: [
+                  {
+                    translateY: bubbleAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [20, 0],
+                    }),
+                  },
+                  {
+                    scale: bubbleAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.8, 1],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            <Text style={styles.japaneseText}>{currentWord.japanese}</Text>
+            <Text style={styles.romajiText}>{currentWord.pronounciation}</Text>
+            <Text style={styles.spanishText}>{currentWord.spanish}</Text>
+          </Animated.View>
+        )}
 
         <TouchableOpacity
           onPress={handlePress}
@@ -82,14 +129,15 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 25,
     alignItems: "center",
-    marginBottom: -100,
+    marginBottom: -110,
     elevation: 8,
+    shadowRadius: 8,
     borderWidth: 1,
     borderColor: "#f0f0f0",
   },
   japaneseText: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: "300",
     color: "#1a1a1a",
     marginBottom: 2,
   },
@@ -99,16 +147,10 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     marginBottom: 8,
   },
-  divider: {
-    width: "100%",
-    height: 1,
-    backgroundColor: "#eee",
-    marginBottom: 8,
-  },
   spanishText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "600",
-    color: "#ff6b6b",
+    color: "#993556",
   },
   petContainer: {
     width: 350,
