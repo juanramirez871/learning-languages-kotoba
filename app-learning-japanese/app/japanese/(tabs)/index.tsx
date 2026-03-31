@@ -41,7 +41,7 @@ export default function JapaneseWordsScreen() {
   }, [bubbleAnim]);
 
   const handlePress = useCallback(() => {
-    if (isJumping) return;
+    if (isJumping || currentWord) return;
 
     setIsJumping(true);
     setJumpFrame(0);
@@ -59,7 +59,7 @@ export default function JapaneseWordsScreen() {
         setJumpFrame(0);
       }
     }, 30);
-  }, [isJumping, showBubble]);
+  }, [isJumping, currentWord, showBubble]);
 
   return (
     <View style={styles.container}>
