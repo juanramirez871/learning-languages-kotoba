@@ -23,6 +23,18 @@ export default function JapaneseWordsScreen() {
     }
   }, [removeFloatingWord]);
 
+  const handlePetPress = useCallback(() => {
+    const randomIndex = Math.floor(Math.random() * words.length);
+    const randomWord = words[randomIndex];
+    
+    petRef.current?.triggerJump({
+      primary: randomWord.japanese,
+      secondary: randomWord.pronounciation,
+      extra: randomWord.spanish,
+      soundText: randomWord.pronounciation
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
       <BackgroundDecor characters={["夢", "犬"]} />
@@ -38,7 +50,7 @@ export default function JapaneseWordsScreen() {
           onPress={() => handleWordPress(word)}
         />
       ))}
-      <PetMascot ref={petRef} />
+      <PetMascot ref={petRef} onPressWithoutWord={handlePetPress} />
     </View>
   );
 }

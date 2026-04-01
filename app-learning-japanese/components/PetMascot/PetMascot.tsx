@@ -19,16 +19,20 @@ export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>((props, r
   const [jumpFrame, setJumpFrame] = useState(0);
   const [currentWord, setCurrentWord] = useState<{ primary: string; secondary?: string; extra?: string } | null>(null);
   const animationRef = useRef<any>(null);
+  const bubbleTimeoutRef = useRef<any>(null);
   const bubbleAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     return () => {
       if (animationRef.current) clearInterval(animationRef.current);
+      if (bubbleTimeoutRef.current) clearTimeout(bubbleTimeoutRef.current);
     };
   }, []);
 
   const showBubble = useCallback((data: { primary: string; secondary?: string; extra?: string; soundText: string }) => {
 
+    if (bubbleTimeoutRef.current) clearTimeout(bubbleTimeoutRef.current);
+    
     setCurrentWord(data);
     createSound(data.soundText);
 
@@ -39,49 +43,56 @@ export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>((props, r
       tension: 40,
     }).start();
 
-    setTimeout(() => {
+    bubbleTimeoutRef.current = setTimeout(() => {
       Animated.timing(bubbleAnim, {
         toValue: 0,
         duration: 500,
         useNativeDriver: true,
       }).start(() => {
         setCurrentWord(null);
+        bubbleTimeoutRef.current = null;
       });
     }, 3000);
   }, [bubbleAnim]);
 
-  const handlePress = useCallback((data?: { primary: string; secondary?: string; extra?: string; soundText: string }) => {
+  const handleJump = useCallback((data?: { primary: string; secondary?: string; extra?: string; soundText: string }) => {
 
-    if (isJumping || currentWord) return false;
-    
+    if (isJumping) return false;
     setIsJumping(true);
     setJumpFrame(0);
-    
-    if (data) {
-      showBubble(data);
-    } else if (props.onPressWithoutWord) {
-      props.onPressWithoutWord();
-    }
 
+    if (data) showBubble(data);
+    if (animationRef.current) clearInterval(animationRef.current);
     let frame = 0;
     const totalFrames = PET_ANIMATIONS.jump.length;
 
     animationRef.current = setInterval(() => {
       frame++;
-      if (frame < totalFrames) {
-        setJumpFrame(frame);
-      } else {
+      if (frame < totalFrames) setJumpFrame(frame);
+      else {
         if (animationRef.current) clearInterval(animationRef.current);
+        animationRef.current = null;
         setIsJumping(false);
         setJumpFrame(0);
       }
     }, 24);
+
     return true;
-  }, [isJumping, currentWord, showBubble, props]);
+  }, [isJumping, showBubble]);
+
+  const handleMascotPress = useCallback(() => {
+    if (isJumping) return;
+    
+    if (props.onPressWithoutWord) {
+      props.onPressWithoutWord();
+    } else {
+      handleJump();
+    }
+  }, [isJumping, props, handleJump]);
 
   useImperativeHandle(ref, () => ({
     triggerJump: (data) => {
-      return handlePress(data);
+      return handleJump(data);
     }
   }));
 
@@ -117,7 +128,7 @@ export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>((props, r
       )}
 
       <TouchableOpacity
-        onPress={() => handlePress()}
+        onPress={handleMascotPress}
         activeOpacity={0.9}
         style={styles.petContainer}
       >

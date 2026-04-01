@@ -22,6 +22,17 @@ export default function EnglishWordsScreen() {
     }
   }, [removeFloatingWord]);
 
+  const handlePetPress = useCallback(() => {
+    const randomIndex = Math.floor(Math.random() * words.length);
+    const randomWord = words[randomIndex];
+    
+    petRef.current?.triggerJump({
+      primary: randomWord.word,
+      extra: randomWord.spanish,
+      soundText: randomWord.word
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
       <BackgroundDecor backgroundColor="#F0F4FD" characters={["A", "Z"]} />
@@ -36,7 +47,7 @@ export default function EnglishWordsScreen() {
           onPress={() => handleWordPress(word)}
         />
       ))}
-      <PetMascot ref={petRef} />
+      <PetMascot ref={petRef} onPressWithoutWord={handlePetPress} />
     </View>
   );
 }
