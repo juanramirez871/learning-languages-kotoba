@@ -24,7 +24,7 @@ export function useFloatingWords({
   maxWords = 15,
   intervalTime = 1500,
   minTop = 80,
-  maxTop = height * 0.75,
+  maxTop = height * 0.70,
   laneHeight = 70,
 }: UseFloatingWordsOptions) {
 
