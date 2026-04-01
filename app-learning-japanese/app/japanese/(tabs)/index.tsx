@@ -5,6 +5,8 @@ import { useFloatingWords } from "@/hooks/useFloatingWords";
 import { FloatingWordItem } from "@/components/FloatingWords/FloatingWordItem";
 import { PetMascot, PetMascotRef } from "@/components/PetMascot/PetMascot";
 import { BackgroundDecor } from "@/components/BackgroundDecor/BackgroundDecor";
+import { Ionicons } from '@expo/vector-icons';
+
 
 export default function JapaneseWordsScreen() {
 
@@ -24,6 +26,7 @@ export default function JapaneseWordsScreen() {
   }, [removeFloatingWord]);
 
   const handlePetPress = useCallback(() => {
+
     const randomIndex = Math.floor(Math.random() * words.length);
     const randomWord = words[randomIndex];
     
@@ -37,6 +40,7 @@ export default function JapaneseWordsScreen() {
 
   return (
     <View style={styles.container}>
+      <Ionicons name="settings" size={24} color="black" style={styles.settingsIcon} />
       <BackgroundDecor characters={["夢", "犬"]} />
       {floatingWords.map((word) => (
         <FloatingWordItem
@@ -61,5 +65,11 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     backgroundColor: "#FDF0F3",
+  },
+  settingsIcon: {
+    position: "absolute",
+    top: 60,
+    right: 20,
+    zIndex: 10,
   },
 });

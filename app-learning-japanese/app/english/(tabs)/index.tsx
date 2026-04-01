@@ -5,6 +5,7 @@ import { useFloatingWords } from "@/hooks/useFloatingWords";
 import { FloatingWordItem } from "@/components/FloatingWords/FloatingWordItem";
 import { PetMascot, PetMascotRef } from "@/components/PetMascot/PetMascot";
 import { BackgroundDecor } from "@/components/BackgroundDecor/BackgroundDecor";
+import { Ionicons } from '@expo/vector-icons';
 
 export default function EnglishWordsScreen() {
 
@@ -35,6 +36,7 @@ export default function EnglishWordsScreen() {
 
   return (
     <View style={styles.container}>
+      <Ionicons name="settings" size={24} color="black" style={styles.settingsIcon} />
       <BackgroundDecor backgroundColor="#F0F4FD" characters={["A", "Z"]} />
       {floatingWords.map((word) => (
         <FloatingWordItem
@@ -58,5 +60,11 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     backgroundColor: "#F0F4FD",
+  },
+  settingsIcon: {
+    position: "absolute",
+    top: 60,
+    right: 20,
+    zIndex: 10,
   },
 });
