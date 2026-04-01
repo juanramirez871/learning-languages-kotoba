@@ -1,115 +1,42 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
-import { Image } from "expo-image";
-import { PET_ANIMATIONS } from "@/constants/petAnimations";
+import React, { useCallback, useRef, memo } from "react";
+import { View, StyleSheet } from "react-native";
 import words from "../../../constants/englishWords.json";
-import { createSound } from "@/utils/elevenlabs";
+import { useFloatingWords } from "@/hooks/useFloatingWords";
+import { FloatingWordItem } from "@/components/FloatingWords/FloatingWordItem";
+import { PetMascot, PetMascotRef } from "@/components/PetMascot/PetMascot";
+import { BackgroundDecor } from "@/components/BackgroundDecor/BackgroundDecor";
 
 export default function EnglishWordsScreen() {
 
-  const [isJumping, setIsJumping] = useState(false);
-  const [jumpFrame, setJumpFrame] = useState(0);
-  const [currentWord, setCurrentWord] = useState<any>(null);
-  const animationRef = useRef<any>(null);
-  const bubbleAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    return () => {
-      if (animationRef.current) clearInterval(animationRef.current);
-    };
-  }, []);
-
-  const showBubble = useCallback(() => {
-
-    const randomIndex = Math.floor(Math.random() * words.length);
-    const selectedWord = words[randomIndex];
-    setCurrentWord(selectedWord);
-    createSound(selectedWord.word);
-
-    Animated.spring(bubbleAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-      friction: 8,
-      tension: 40,
-    }).start();
-
-    setTimeout(() => {
-      Animated.timing(bubbleAnim, {
-        toValue: 0,
-        duration: 500,
-        useNativeDriver: true,
-      }).start(() => {
-        setCurrentWord(null);
-      });
-    }, 3000);
-  }, [bubbleAnim]);
-
-  const handlePress = useCallback(() => {
-    if (isJumping || currentWord) return;
-
-    setIsJumping(true);
-    setJumpFrame(0);
-    showBubble();
-
-    let frame = 0;
-    const totalFrames = PET_ANIMATIONS.jump.length;
-
-    animationRef.current = setInterval(() => {
-      frame++;
-      if (frame < totalFrames) setJumpFrame(frame);
-      else {
-        if (animationRef.current) clearInterval(animationRef.current);
-        setIsJumping(false);
-        setJumpFrame(0);
-      }
-    }, 30);
-  }, [isJumping, currentWord, showBubble]);
+  const { floatingWords, removeFloatingWord } = useFloatingWords({ wordsList: words });
+  const petRef = useRef<PetMascotRef>(null);
+  const handleWordPress = useCallback((word: any) => {
+    const started = petRef.current?.triggerJump({
+      primary: word.data.word,
+      extra: word.data.spanish,
+      soundText: word.data.word
+    });
+    
+    if (started) {
+      removeFloatingWord(word.id);
+    }
+  }, [removeFloatingWord]);
 
   return (
     <View style={styles.container}>
-      <View style={styles.petSection}>
-        {currentWord && (
-          <Animated.View
-            style={[
-              styles.speechBubble,
-              {
-                opacity: bubbleAnim,
-                transform: [
-                  {
-                    translateY: bubbleAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [20, 0],
-                    }),
-                  },
-                  {
-                    scale: bubbleAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.8, 1],
-                    }),
-                  },
-                ],
-              },
-            ]}
-          >
-            <Text style={styles.primaryText}>{currentWord.word}</Text>
-            <Text style={styles.spanishText}>{currentWord.spanish}</Text>
-          </Animated.View>
-        )}
-
-        <TouchableOpacity
-          onPress={handlePress}
-          activeOpacity={0.9}
-          style={styles.petContainer}
-        >
-          <Image
-            source={isJumping ? PET_ANIMATIONS.jump[jumpFrame] : PET_ANIMATIONS.stay}
-            style={styles.image}
-            contentFit="contain"
-            transition={0}
-            cachePolicy="memory-disk"
-          />
-        </TouchableOpacity>
-      </View>
+      <BackgroundDecor backgroundColor="#F0F4FD" characters={["A", "Z"]} />
+      {floatingWords.map((word) => (
+        <FloatingWordItem
+          key={word.id}
+          id={word.id}
+          top={word.top}
+          duration={word.duration}
+          primaryText={word.data.word}
+          onComplete={removeFloatingWord}
+          onPress={() => handleWordPress(word)}
+        />
+      ))}
+      <PetMascot ref={petRef} />
     </View>
   );
 }
@@ -119,44 +46,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  petSection: {
-    position: "absolute",
-    bottom: -50,
-    alignItems: "center",
-  },
-  speechBubble: {
-    backgroundColor: "#ffffff",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderRadius: 25,
-    alignItems: "center",
-    marginBottom: -110,
-    elevation: 8,
-    shadowRadius: 8,
-    borderWidth: 1,
-    borderColor: "#f0f0f0",
-  },
-  primaryText: {
-    fontSize: 24,
-    fontWeight: "300",
-    color: "#1a1a1a",
-    marginBottom: 8,
-  },
-  spanishText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#993556",
-  },
-  petContainer: {
-    width: 350,
-    height: 350,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  image: {
-    width: "100%",
-    height: "100%",
+    backgroundColor: "#F0F4FD",
   },
 });
