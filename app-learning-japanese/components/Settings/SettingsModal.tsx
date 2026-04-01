@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './index';
+import { Linking } from 'react-native';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 
 interface SettingsModalProps {
@@ -39,7 +41,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose
           </View>
 
           <ScrollView style={styles.content}>
-            {/* Sound Section */}
+
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
                 <Ionicons name="volume-high-outline" size={20} color="#FF6B6B" />
@@ -76,6 +78,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose
               <View style={styles.settingRow}>
                 <Text style={styles.settingLabel}>Habilitar notificaciones</Text>
                 <Switch value={false} onValueChange={() => {}} trackColor={{ true: '#FF6B6B', false: '#ccc' }} />
+              </View>
+            </View>
+
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <AntDesign name="info" size={24} color="#FF6B6B" />
+                <Text style={styles.sectionTitle}>Información</Text>
+              </View>
+              <View style={[styles.settingRow, { flexDirection: 'column', alignItems: 'flex-start' }]}>
+                <Text style={styles.settingLabel}>Codigo de la aplicación</Text>
+                <TouchableOpacity onPress={() => Linking.openURL('https://github.com/juanramirez871/learning-languages')}>
+                  <Text style={[styles.valueText, { color: '#FF6B6B', textDecorationLine: 'underline' }]}>https://github.com/juanramirez871/learning-languages</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </ScrollView>
