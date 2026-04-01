@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect, memo } from "react";
+import React, { useState, useCallback, useRef, useEffect, memo, forwardRef, useImperativeHandle } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, Easing } from "react-native";
 import { Image } from "expo-image";
 import { PET_ANIMATIONS } from "@/constants/petAnimations";
@@ -15,10 +15,15 @@ interface Word {
   top?: number;
 }
 
-const FloatingWordItem = memo(({ word, onComplete }: { word: Word; onComplete: () => void }) => {
-
+const FloatingWordItem = memo(({ word, onComplete, onPress }: { word: Word; onComplete: () => void; onPress: (word: Word) => void }) => {
+  
   const translateX = useRef(new Animated.Value(width)).current;
   const duration = 24000;
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   useEffect(() => {
     Animated.timing(translateX, {
@@ -28,10 +33,10 @@ const FloatingWordItem = memo(({ word, onComplete }: { word: Word; onComplete: (
       easing: Easing.linear,
     }).start(({ finished }) => {
       if (finished) {
-        onComplete();
+        onCompleteRef.current();
       }
     });
-  }, [translateX, onComplete]);
+  }, [translateX, duration]);
 
   return (
     <Animated.View
@@ -43,15 +48,23 @@ const FloatingWordItem = memo(({ word, onComplete }: { word: Word; onComplete: (
         },
       ]}
     >
-      <View style={styles.floatingBubble}>
+      <TouchableOpacity
+        onPress={() => onPress(word)}
+        activeOpacity={0.7}
+        style={styles.floatingBubble}
+      >
         <Text style={styles.floatingJapaneseText}>{word.japanese}</Text>
         <Text style={styles.floatingRomajiText}>{word.pronounciation}</Text>
-      </View>
+      </TouchableOpacity>
     </Animated.View>
   );
 });
 
-const PetMascot = memo(() => {
+interface PetMascotRef {
+  triggerJump: (word: Word) => boolean;
+}
+
+const PetMascot = memo(forwardRef<PetMascotRef, any>((props, ref) => {
 
   const [isJumping, setIsJumping] = useState(false);
   const [jumpFrame, setJumpFrame] = useState(0);
@@ -65,10 +78,9 @@ const PetMascot = memo(() => {
     };
   }, []);
 
-  const showBubble = useCallback(() => {
+  const showBubble = useCallback((specificWord?: Word) => {
 
-    const randomIndex = Math.floor(Math.random() * words.length);
-    const selectedWord = words[randomIndex] as Word;
+    const selectedWord = specificWord || (words[Math.floor(Math.random() * words.length)] as Word);
     setCurrentWord(selectedWord);
     createSound(selectedWord.pronounciation);
 
@@ -90,12 +102,12 @@ const PetMascot = memo(() => {
     }, 3000);
   }, [bubbleAnim]);
 
-  const handlePress = useCallback(() => {
+  const handlePress = useCallback((specificWord?: Word) => {
 
-    if (isJumping || currentWord) return;
+    if (isJumping || currentWord) return false;
     setIsJumping(true);
     setJumpFrame(0);
-    showBubble();
+    showBubble(specificWord);
 
     let frame = 0;
     const totalFrames = PET_ANIMATIONS.jump.length;
@@ -110,7 +122,14 @@ const PetMascot = memo(() => {
         setJumpFrame(0);
       }
     }, 24);
+    return true;
   }, [isJumping, currentWord, showBubble]);
+
+  useImperativeHandle(ref, () => ({
+    triggerJump: (word: Word) => {
+      return handlePress(word);
+    }
+  }));
 
   return (
     <View style={styles.petSection}>
@@ -144,7 +163,7 @@ const PetMascot = memo(() => {
       )}
 
       <TouchableOpacity
-        onPress={handlePress}
+        onPress={() => handlePress()}
         activeOpacity={0.9}
         style={styles.petContainer}
       >
@@ -158,10 +177,11 @@ const PetMascot = memo(() => {
       </TouchableOpacity>
     </View>
   );
-});
+}));
 
 export default function JapaneseWordsScreen() {
   const [floatingWords, setFloatingWords] = useState<Word[]>([]);
+  const petRef = useRef<PetMascotRef>(null);
 
   const removeFloatingWord = useCallback((id: number) => {
     setFloatingWords((prev) => prev.filter((w) => w.id !== id));
@@ -215,9 +235,15 @@ export default function JapaneseWordsScreen() {
           key={word.id}
           word={word}
           onComplete={() => removeFloatingWord(word.id!)}
+          onPress={(word) => {
+            const started = petRef.current?.triggerJump(word);
+            if (started) {
+              removeFloatingWord(word.id!);
+            }
+          }}
         />
       ))}
-      <PetMascot />
+      <PetMascot ref={petRef} />
     </View>
   );
 }
