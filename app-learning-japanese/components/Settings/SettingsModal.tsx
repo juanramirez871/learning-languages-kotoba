@@ -1,0 +1,86 @@
+import React from 'react';
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  Switch,
+  ScrollView,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { styles } from './index';
+
+
+interface SettingsModalProps {
+  isVisible: boolean;
+  onClose: () => void;
+}
+
+export const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose }) => {
+  return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={isVisible}
+      onRequestClose={onClose}
+    >
+      <View style={styles.overlay}>
+        <TouchableOpacity 
+          style={styles.dismissArea} 
+          activeOpacity={1} 
+          onPress={onClose} 
+        />
+        <View style={styles.modalContainer}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Configuración</Text>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Ionicons name="close" size={24} color="#333" />
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView style={styles.content}>
+            {/* Sound Section */}
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Ionicons name="volume-high-outline" size={20} color="#FF6B6B" />
+                <Text style={styles.sectionTitle}>Sonido</Text>
+              </View>
+              <View style={styles.settingRow}>
+                <Text style={styles.settingLabel}>Activar sonidos</Text>
+                <Switch value={true} onValueChange={() => {}} trackColor={{ true: '#FF6B6B', false: '#ccc' }} />
+              </View>
+            </View>
+
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Ionicons name="notifications-outline" size={20} color="#FF6B6B" />
+                <Text style={styles.sectionTitle}>Notificaciones</Text>
+              </View>
+              
+              <View style={styles.settingRow}>
+                <Text style={styles.settingLabel}>Frecuencia diaria</Text>
+                <View style={styles.valueContainer}>
+                  <Text style={styles.valueText}>5 veces</Text>
+                  <Ionicons name="chevron-forward" size={16} color="#999" />
+                </View>
+              </View>
+
+              <View style={styles.settingRow}>
+                <Text style={styles.settingLabel}>Rango de horas</Text>
+                <View style={styles.valueContainer}>
+                  <Text style={styles.valueText}>09:00 - 21:00</Text>
+                  <Ionicons name="chevron-forward" size={16} color="#999" />
+                </View>
+              </View>
+
+              <View style={styles.settingRow}>
+                <Text style={styles.settingLabel}>Habilitar notificaciones</Text>
+                <Switch value={false} onValueChange={() => {}} trackColor={{ true: '#FF6B6B', false: '#ccc' }} />
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
+};

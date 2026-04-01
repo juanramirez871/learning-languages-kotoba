@@ -1,17 +1,20 @@
-import React, { useCallback, useRef, memo } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useCallback, useRef, useState, memo } from "react";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import words from "../../../constants/japaneseWords.json";
 import { useFloatingWords } from "@/hooks/useFloatingWords";
 import { FloatingWordItem } from "@/components/FloatingWords/FloatingWordItem";
 import { PetMascot, PetMascotRef } from "@/components/PetMascot/PetMascot";
 import { BackgroundDecor } from "@/components/BackgroundDecor/BackgroundDecor";
 import { Ionicons } from '@expo/vector-icons';
+import { SettingsModal } from "@/components/Settings";
 
 
 export default function JapaneseWordsScreen() {
 
   const { floatingWords, removeFloatingWord } = useFloatingWords({ wordsList: words });
   const petRef = useRef<PetMascotRef>(null);
+  const [isSettingsVisible, setIsSettingsVisible] = useState(false);
+
   const handleWordPress = useCallback((word: any) => {
     const started = petRef.current?.triggerJump({
       primary: word.data.japanese,
@@ -40,7 +43,13 @@ export default function JapaneseWordsScreen() {
 
   return (
     <View style={styles.container}>
-      <Ionicons name="settings" size={24} color="black" style={styles.settingsIcon} />
+      <TouchableOpacity 
+        style={styles.settingsIcon} 
+        onPress={() => setIsSettingsVisible(true)}
+      >
+        <Ionicons name="settings" size={24} color="black" />
+      </TouchableOpacity>
+      
       <BackgroundDecor characters={["夢", "犬"]} />
       {floatingWords.map((word) => (
         <FloatingWordItem
@@ -55,6 +64,11 @@ export default function JapaneseWordsScreen() {
         />
       ))}
       <PetMascot ref={petRef} onPressWithoutWord={handlePetPress} />
+
+      <SettingsModal 
+        isVisible={isSettingsVisible} 
+        onClose={() => setIsSettingsVisible(false)} 
+      />
     </View>
   );
 }
