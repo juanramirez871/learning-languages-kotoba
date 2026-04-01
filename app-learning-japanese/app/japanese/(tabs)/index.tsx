@@ -1,15 +1,61 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
+import React, { useState, useCallback, useRef, useEffect, memo } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, Easing } from "react-native";
 import { Image } from "expo-image";
 import { PET_ANIMATIONS } from "@/constants/petAnimations";
 import words from "../../../constants/japaneseWords.json";
 import { createSound } from "@/utils/elevenlabs";
 
-export default function JapaneseWordsScreen() {
+const { width, height } = Dimensions.get("window");
+
+interface Word {
+  japanese: string;
+  pronounciation: string;
+  spanish: string;
+  id?: number;
+  top?: number;
+}
+
+const FloatingWordItem = memo(({ word, onComplete }: { word: Word; onComplete: () => void }) => {
+
+  const translateX = useRef(new Animated.Value(width)).current;
+  const duration = 24000;
+
+  useEffect(() => {
+    Animated.timing(translateX, {
+      toValue: -800,
+      duration: duration,
+      useNativeDriver: true,
+      easing: Easing.linear,
+    }).start(({ finished }) => {
+      if (finished) {
+        onComplete();
+      }
+    });
+  }, [translateX, onComplete]);
+
+  return (
+    <Animated.View
+      style={[
+        styles.floatingWordContainer,
+        {
+          top: word.top,
+          transform: [{ translateX }],
+        },
+      ]}
+    >
+      <View style={styles.floatingBubble}>
+        <Text style={styles.floatingJapaneseText}>{word.japanese}</Text>
+        <Text style={styles.floatingRomajiText}>{word.pronounciation}</Text>
+      </View>
+    </Animated.View>
+  );
+});
+
+const PetMascot = memo(() => {
 
   const [isJumping, setIsJumping] = useState(false);
   const [jumpFrame, setJumpFrame] = useState(0);
-  const [currentWord, setCurrentWord] = useState<any>(null);
+  const [currentWord, setCurrentWord] = useState<Word | null>(null);
   const animationRef = useRef<any>(null);
   const bubbleAnim = useRef(new Animated.Value(0)).current;
 
@@ -22,7 +68,7 @@ export default function JapaneseWordsScreen() {
   const showBubble = useCallback(() => {
 
     const randomIndex = Math.floor(Math.random() * words.length);
-    const selectedWord = words[randomIndex];
+    const selectedWord = words[randomIndex] as Word;
     setCurrentWord(selectedWord);
     createSound(selectedWord.pronounciation);
 
@@ -45,8 +91,8 @@ export default function JapaneseWordsScreen() {
   }, [bubbleAnim]);
 
   const handlePress = useCallback(() => {
-    if (isJumping || currentWord) return;
 
+    if (isJumping || currentWord) return;
     setIsJumping(true);
     setJumpFrame(0);
     showBubble();
@@ -56,61 +102,122 @@ export default function JapaneseWordsScreen() {
 
     animationRef.current = setInterval(() => {
       frame++;
-      if (frame < totalFrames) setJumpFrame(frame);
-      else {
+      if (frame < totalFrames) {
+        setJumpFrame(frame);
+      } else {
         if (animationRef.current) clearInterval(animationRef.current);
         setIsJumping(false);
         setJumpFrame(0);
       }
-    }, 30);
+    }, 24);
   }, [isJumping, currentWord, showBubble]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.petSection}>
-        {currentWord && (
-          <Animated.View
-            style={[
-              styles.speechBubble,
-              {
-                opacity: bubbleAnim,
-                transform: [
-                  {
-                    translateY: bubbleAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [20, 0],
-                    }),
-                  },
-                  {
-                    scale: bubbleAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.8, 1],
-                    }),
-                  },
-                ],
-              },
-            ]}
-          >
-            <Text style={styles.japaneseText}>{currentWord.japanese}</Text>
-            <Text style={styles.romajiText}>{currentWord.pronounciation}</Text>
-            <Text style={styles.spanishText}>{currentWord.spanish}</Text>
-          </Animated.View>
-        )}
-
-        <TouchableOpacity
-          onPress={handlePress}
-          activeOpacity={0.9}
-          style={styles.petContainer}
+    <View style={styles.petSection}>
+      {currentWord && (
+        <Animated.View
+          style={[
+            styles.speechBubble,
+            {
+              opacity: bubbleAnim,
+              transform: [
+                {
+                  translateY: bubbleAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [20, 0],
+                  }),
+                },
+                {
+                  scale: bubbleAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.8, 1],
+                  }),
+                },
+              ],
+            },
+          ]}
         >
-          <Image
-            source={isJumping ? PET_ANIMATIONS.jump[jumpFrame] : PET_ANIMATIONS.stay}
-            style={styles.image}
-            contentFit="contain"
-            transition={0}
-            cachePolicy="memory-disk"
-          />
-        </TouchableOpacity>
-      </View>
+          <Text style={styles.japaneseText}>{currentWord.japanese}</Text>
+          <Text style={styles.romajiText}>{currentWord.pronounciation}</Text>
+          <Text style={styles.spanishText}>{currentWord.spanish}</Text>
+        </Animated.View>
+      )}
+
+      <TouchableOpacity
+        onPress={handlePress}
+        activeOpacity={0.9}
+        style={styles.petContainer}
+      >
+        <Image
+          source={isJumping ? PET_ANIMATIONS.jump[jumpFrame] : PET_ANIMATIONS.stay}
+          style={styles.image}
+          contentFit="contain"
+          transition={0}
+          cachePolicy="memory-disk"
+        />
+      </TouchableOpacity>
+    </View>
+  );
+});
+
+export default function JapaneseWordsScreen() {
+  const [floatingWords, setFloatingWords] = useState<Word[]>([]);
+
+  const removeFloatingWord = useCallback((id: number) => {
+    setFloatingWords((prev) => prev.filter((w) => w.id !== id));
+  }, []);
+
+  const addFloatingWord = useCallback(() => {
+
+     const minDistance = 70;
+     const maxAttempts = 10;
+     let finalTop = 0;
+     let attempts = 0;
+     let isTooClose = true;
+ 
+     const maxTop = height * 0.8 - 120;
+     while (isTooClose && attempts < maxAttempts) {
+       finalTop = Math.random() * (maxTop - 80) + 80;
+       isTooClose = floatingWords.some((word) => Math.abs((word.top || 0) - finalTop) < minDistance);
+       attempts++;
+     }
+
+    const randomIndex = Math.floor(Math.random() * words.length);
+    const newWord = { 
+      ...words[randomIndex], 
+      id: Date.now() + Math.random(),
+      top: finalTop 
+    };
+    setFloatingWords((prev) => [...prev, newWord as Word]);
+  }, [floatingWords]);
+
+  useEffect(() => {
+    const initialTimer = setTimeout(() => {
+      addFloatingWord();
+    }, 2000);
+
+    const interval = setInterval(() => {
+      if (floatingWords.length < 5) {
+        addFloatingWord();
+      }
+    }, 5000);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, [addFloatingWord, floatingWords.length]);
+
+  return (
+    <View style={styles.container}>
+      {floatingWords.map((word) => (
+        <FloatingWordItem
+          key={word.id}
+          word={word}
+          onComplete={() => removeFloatingWord(word.id!)}
+        />
+      ))}
+      <PetMascot />
     </View>
   );
 }
@@ -138,6 +245,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     borderWidth: 1,
     borderColor: "#f0f0f0",
+    zIndex: 10,
   },
   japaneseText: {
     fontSize: 24,
@@ -161,9 +269,39 @@ const styles = StyleSheet.create({
     height: 350,
     justifyContent: "center",
     alignItems: "center",
+    zIndex: 10
   },
   image: {
     width: "100%",
     height: "100%",
+  },
+  floatingWordContainer: {
+    position: "absolute",
+    left: 0,
+    zIndex: 1,
+  },
+  floatingBubble: {
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "rgba(240, 240, 240, 0.8)",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  floatingJapaneseText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  floatingRomajiText: {
+    fontSize: 12,
+    color: "#666",
+    fontStyle: "italic",
   },
 });
