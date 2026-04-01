@@ -51,13 +51,31 @@ const FloatingWordItem = memo(({ word, onComplete, onPress }: { word: Word; onCo
     >
       <TouchableOpacity
         onPress={() => onPress(word)}
-        activeOpacity={0.7}
+        activeOpacity={0.8}
         style={styles.floatingBubble}
       >
         <Text style={styles.floatingJapaneseText}>{word.japanese}</Text>
         <Text style={styles.floatingRomajiText}>{word.pronounciation}</Text>
       </TouchableOpacity>
     </Animated.View>
+  );
+});
+
+const BackgroundDecor = memo(() => {
+  return (
+    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+
+      <View style={[styles.decorLineVertical, { left: '5%', height: '100%', width: 1 }]} />
+      <View style={[styles.decorLineVertical, { right: '5%', height: '100%', width: 1 }]} />
+      <View style={[styles.decorLineHorizontal, { top: '10%', width: '100%', height: 1 }]} />
+      <View style={[styles.decorLineHorizontal, { bottom: '20%', width: '100%', height: 1 }]} />
+
+      <Text style={[styles.decorText, { top: '25%', left: '15%', fontSize: 140 }]}>夢</Text>
+      <Text style={[styles.decorText, { bottom: '35%', right: '10%', fontSize: 160 }]}>犬</Text>
+      
+      <View style={[styles.cornerAccent, { top: 0, left: 0, borderRightWidth: 1, borderBottomWidth: 1 }]} />
+      <View style={[styles.cornerAccent, { bottom: 0, right: 0, borderLeftWidth: 1, borderTopWidth: 1 }]} />
+    </View>
   );
 });
 
@@ -237,6 +255,7 @@ export default function JapaneseWordsScreen() {
 
   return (
     <View style={styles.container}>
+      <BackgroundDecor />
       {floatingWords.map((word) => (
         <FloatingWordItem
           key={word.id}
@@ -260,7 +279,44 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#FDF0F3",
+  },
+  decorLineVertical: {
+    position: 'absolute',
+    backgroundColor: '#993556',
+    opacity: 0.03,
+  },
+  decorLineHorizontal: {
+    position: 'absolute',
+    backgroundColor: '#993556',
+    opacity: 0.03,
+  },
+  hankoBox: {
+    position: 'absolute',
+    width: 45,
+    height: 45,
+    borderWidth: 2,
+    borderColor: 'rgba(153, 53, 86, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+  },
+  hankoText: {
+    fontSize: 24,
+    color: 'rgba(153, 53, 86, 0.4)',
+    fontWeight: 'bold',
+  },
+  decorText: {
+    position: 'absolute',
+    color: '#993556',
+    opacity: 0.03,
+    fontWeight: '900',
+  },
+  cornerAccent: {
+    position: 'absolute',
+    width: 100,
+    height: 100,
+    borderColor: 'rgba(153, 53, 86, 0.05)',
   },
   petSection: {
     position: "absolute",
@@ -321,9 +377,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(240, 240, 240, 0.8)",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
     shadowRadius: 5,
     elevation: 2,
   },
