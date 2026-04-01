@@ -13,12 +13,13 @@ interface Word {
   spanish: string;
   id?: number;
   top?: number;
+  duration?: number;
 }
 
 const FloatingWordItem = memo(({ word, onComplete, onPress }: { word: Word; onComplete: () => void; onPress: (word: Word) => void }) => {
-  
+
   const translateX = useRef(new Animated.Value(width)).current;
-  const duration = 24000;
+  const duration = word.duration || 12000;
   const onCompleteRef = useRef(onComplete);
 
   useEffect(() => {
@@ -27,7 +28,7 @@ const FloatingWordItem = memo(({ word, onComplete, onPress }: { word: Word; onCo
 
   useEffect(() => {
     Animated.timing(translateX, {
-      toValue: -800,
+      toValue: -400,
       duration: duration,
       useNativeDriver: true,
       easing: Easing.linear,
@@ -180,53 +181,59 @@ const PetMascot = memo(forwardRef<PetMascotRef, any>((props, ref) => {
 }));
 
 export default function JapaneseWordsScreen() {
+
   const [floatingWords, setFloatingWords] = useState<Word[]>([]);
   const petRef = useRef<PetMascotRef>(null);
-
   const removeFloatingWord = useCallback((id: number) => {
     setFloatingWords((prev) => prev.filter((w) => w.id !== id));
   }, []);
 
   const addFloatingWord = useCallback(() => {
+    setFloatingWords((prev) => {
 
-     const minDistance = 70;
-     const maxAttempts = 10;
-     let finalTop = 0;
-     let attempts = 0;
-     let isTooClose = true;
- 
-     const maxTop = height * 0.8 - 120;
-     while (isTooClose && attempts < maxAttempts) {
-       finalTop = Math.random() * (maxTop - 80) + 80;
-       isTooClose = floatingWords.some((word) => Math.abs((word.top || 0) - finalTop) < minDistance);
-       attempts++;
-     }
+      const minTop = 80;
+      const maxTop = height * 0.75;
+      const laneHeight = 70;
+      const lanes = [];
 
-    const randomIndex = Math.floor(Math.random() * words.length);
-    const newWord = { 
-      ...words[randomIndex], 
-      id: Date.now() + Math.random(),
-      top: finalTop 
-    };
-    setFloatingWords((prev) => [...prev, newWord as Word]);
-  }, [floatingWords]);
+      for (let top = minTop; top <= maxTop; top += laneHeight) {
+        lanes.push(top);
+      }
+
+      const availableLanes = lanes.filter(lane => 
+        !prev.some(word => Math.abs((word.top || 0) - lane) < laneHeight - 10)
+      );
+
+      if (availableLanes.length === 0 || prev.length >= 15) return prev;
+
+      const finalTop = availableLanes[Math.floor(Math.random() * availableLanes.length)];
+      const randomIndex = Math.floor(Math.random() * words.length);
+      const newWord = { 
+        ...words[randomIndex], 
+        id: Date.now() + Math.random(),
+        top: finalTop,
+        duration: Math.random() * 4000 + 10000
+      };
+      
+      return [...prev, newWord as Word];
+    });
+  }, []);
 
   useEffect(() => {
+
     const initialTimer = setTimeout(() => {
       addFloatingWord();
-    }, 2000);
+    }, 1000);
 
     const interval = setInterval(() => {
-      if (floatingWords.length < 5) {
-        addFloatingWord();
-      }
-    }, 5000);
+      addFloatingWord();
+    }, 1500);
 
     return () => {
       clearTimeout(initialTimer);
       clearInterval(interval);
     };
-  }, [addFloatingWord, floatingWords.length]);
+  }, [addFloatingWord]);
 
   return (
     <View style={styles.container}>
