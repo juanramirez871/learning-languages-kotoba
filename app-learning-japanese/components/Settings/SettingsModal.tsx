@@ -92,6 +92,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose
                   <Text style={[styles.valueText, { color: '#FF6B6B', textDecorationLine: 'underline' }]}>https://github.com/juanramirez871/learning-languages</Text>
                 </TouchableOpacity>
               </View>
+
+              <View style={[styles.settingRow]}>
+                <Text style={styles.settingLabel}>Versión de la aplicación</Text>
+                <TouchableOpacity>
+                  <Text style={[styles.valueText, { color: '#FF6B6B' }]}>1.0.0</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </ScrollView>
         </View>
