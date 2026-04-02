@@ -7,11 +7,13 @@ import { LANGUAGES } from "../constants/languages";
 import { LanguageCard } from "../components/LanguageCard";
 import { styles } from "../styles/index.styles";
 import { ENGLISH_GREETINGS, JAPANESE_GREETINGS } from "@/constants/greetings";
+import { useSettings } from "@/context/SettingsContext";
 
 export default function Index() {
 
   const router = useRouter();
   const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const { isSoundEnabled } = useSettings();
 
   useEffect(() => {
     return sound
@@ -23,9 +25,11 @@ export default function Index() {
 
   const playRandomGreeting = async (language: string) => {
     try {
+
       const greetings = language === "english" ? ENGLISH_GREETINGS : JAPANESE_GREETINGS;
       const randomIndex = Math.floor(Math.random() * greetings.length);
       const soundSource = greetings[randomIndex];
+      if (!isSoundEnabled) return;
 
       const { sound: newSound } = await Audio.Sound.createAsync(
         soundSource,

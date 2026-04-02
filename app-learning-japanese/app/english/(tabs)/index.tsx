@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState, memo } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import words from "../../../constants/englishWords.json";
 import { useFloatingWords } from "@/hooks/useFloatingWords";
@@ -7,6 +7,7 @@ import { PetMascot, PetMascotRef } from "@/components/PetMascot/PetMascot";
 import { BackgroundDecor } from "@/components/BackgroundDecor/BackgroundDecor";
 import { Ionicons } from '@expo/vector-icons';
 import { SettingsModal } from "@/components/Settings";
+import { useSettings } from "@/context/SettingsContext";
 
 export default function EnglishWordsScreen() {
 

@@ -8,9 +8,10 @@ import {
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from './index';
+import { styles } from './styles';
 import { Linking } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useSettings } from '@/context/SettingsContext';
 
 
 interface SettingsModalProps {
@@ -19,6 +20,13 @@ interface SettingsModalProps {
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose }) => {
+  const { 
+    isSoundEnabled, 
+    setSoundEnabled, 
+    isNotificationsEnabled, 
+    setNotificationsEnabled 
+  } = useSettings();
+
   return (
     <Modal
       animationType="slide"
@@ -49,7 +57,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose
               </View>
               <View style={styles.settingRow}>
                 <Text style={styles.settingLabel}>Activar sonidos</Text>
-                <Switch value={true} onValueChange={() => {}} trackColor={{ true: '#FF6B6B', false: '#ccc' }} />
+                <Switch 
+                  value={isSoundEnabled} 
+                  onValueChange={setSoundEnabled} 
+                  trackColor={{ true: '#FF6B6B', false: '#ccc' }} 
+                />
               </View>
             </View>
 
@@ -77,7 +89,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose
 
               <View style={styles.settingRow}>
                 <Text style={styles.settingLabel}>Habilitar notificaciones</Text>
-                <Switch value={false} onValueChange={() => {}} trackColor={{ true: '#FF6B6B', false: '#ccc' }} />
+                <Switch 
+                  value={isNotificationsEnabled} 
+                  onValueChange={setNotificationsEnabled} 
+                  trackColor={{ true: '#FF6B6B', false: '#ccc' }} 
+                />
               </View>
             </View>
 

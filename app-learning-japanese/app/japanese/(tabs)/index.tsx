@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState, memo } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import words from "../../../constants/japaneseWords.json";
 import { useFloatingWords } from "@/hooks/useFloatingWords";

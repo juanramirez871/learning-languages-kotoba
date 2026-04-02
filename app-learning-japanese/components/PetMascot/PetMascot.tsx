@@ -4,6 +4,7 @@ import { Image } from "expo-image";
 import { PET_ANIMATIONS } from "@/constants/petAnimations";
 import { createSound } from "@/utils/elevenlabs";
 import styles from "./index";
+import { useSettings } from "@/context/SettingsContext";
 
 export interface PetMascotRef {
   triggerJump: (data: { primary: string; secondary?: string; extra?: string; soundText: string }) => boolean;
@@ -15,6 +16,7 @@ interface PetMascotProps {
 
 export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>((props, ref) => {
 
+  const { isSoundEnabled } = useSettings();
   const [isJumping, setIsJumping] = useState(false);
   const [jumpFrame, setJumpFrame] = useState(0);
   const [currentWord, setCurrentWord] = useState<{ primary: string; secondary?: string; extra?: string } | null>(null);
@@ -34,7 +36,9 @@ export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>((props, r
     if (bubbleTimeoutRef.current) clearTimeout(bubbleTimeoutRef.current);
     
     setCurrentWord(data);
-    createSound(data.soundText);
+    if (isSoundEnabled) {
+      createSound(data.soundText);
+    }
 
     Animated.spring(bubbleAnim, {
       toValue: 1,
@@ -53,7 +57,7 @@ export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>((props, r
         bubbleTimeoutRef.current = null;
       });
     }, 3000);
-  }, [bubbleAnim]);
+  }, [bubbleAnim, isSoundEnabled]);
 
   const handleJump = useCallback((data?: { primary: string; secondary?: string; extra?: string; soundText: string }) => {
 
@@ -94,7 +98,7 @@ export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>((props, r
     triggerJump: (data) => {
       return handleJump(data);
     }
-  }));
+  }), [handleJump]);
 
   return (
     <View style={styles.petSection}>
