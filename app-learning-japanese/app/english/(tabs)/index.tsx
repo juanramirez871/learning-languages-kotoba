@@ -58,7 +58,7 @@ export default function EnglishWordsScreen() {
           onPress={() => handleWordPress(word)}
         />
       ))}
-      <PetMascot ref={petRef} onPressWithoutWord={handlePetPress} />
+      <PetMascot ref={petRef} type="english" onPressWithoutWord={handlePetPress} />
 
       <SettingsModal 
         isVisible={isSettingsVisible} 

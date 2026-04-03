@@ -12,9 +12,10 @@ export interface PetMascotRef {
 
 interface PetMascotProps {
   onPressWithoutWord?: () => void;
+  type?: "japanese" | "english";
 }
 
-export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>((props, ref) => {
+export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>(({ type = "japanese", ...props }, ref) => {
 
   const { isSoundEnabled } = useSettings();
   const [isJumping, setIsJumping] = useState(false);
@@ -23,6 +24,9 @@ export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>((props, r
   const animationRef = useRef<any>(null);
   const bubbleTimeoutRef = useRef<any>(null);
   const bubbleAnim = useRef(new Animated.Value(0)).current;
+
+  const stayAnimation = type === "japanese" ? PET_ANIMATIONS.stay : PET_ANIMATIONS.stayCat;
+  const jumpAnimations = type === "japanese" ? PET_ANIMATIONS.jump : PET_ANIMATIONS.jumpCat;
 
   useEffect(() => {
     return () => {
@@ -71,7 +75,7 @@ export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>((props, r
     if (data) showBubble(data);
     if (animationRef.current) clearInterval(animationRef.current);
     let frame = 0;
-    const totalFrames = PET_ANIMATIONS.jump.length;
+    const totalFrames = jumpAnimations.length;
 
     animationRef.current = setInterval(() => {
       frame++;
@@ -85,7 +89,7 @@ export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>((props, r
     }, 24);
 
     return true;
-  }, [isJumping, showBubble]);
+  }, [isJumping, showBubble, jumpAnimations.length]);
 
   const handleMascotPress = useCallback(() => {
     if (isJumping) return;
@@ -140,7 +144,7 @@ export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>((props, r
         style={styles.petContainer}
       >
         <Image
-          source={isJumping ? PET_ANIMATIONS.jump[jumpFrame] : PET_ANIMATIONS.stay}
+          source={isJumping ? jumpAnimations[jumpFrame] : stayAnimation}
           style={styles.image}
           contentFit="contain"
           transition={0}

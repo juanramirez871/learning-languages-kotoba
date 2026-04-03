@@ -63,7 +63,7 @@ export default function JapaneseWordsScreen() {
           onPress={() => handleWordPress(word)}
         />
       ))}
-      <PetMascot ref={petRef} onPressWithoutWord={handlePetPress} />
+      <PetMascot ref={petRef} type="japanese" onPressWithoutWord={handlePetPress} />
 
       <SettingsModal 
         isVisible={isSettingsVisible} 
