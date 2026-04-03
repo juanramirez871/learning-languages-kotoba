@@ -177,8 +177,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose
               </View>
               <View style={[styles.settingRow, { flexDirection: 'column', alignItems: 'flex-start' }]}>
                 <Text style={styles.settingLabel}>Codigo de la aplicación</Text>
-                <TouchableOpacity onPress={() => Linking.openURL('https://github.com/juanramirez871/learning-languages')}>
-                  <Text style={[styles.valueText, { color: '#FF6B6B', textDecorationLine: 'underline' }]}>https://github.com/juanramirez871/learning-languages</Text>
+                <TouchableOpacity onPress={() => Linking.openURL('https://github.com/juanramirez871/learning-languages-kotoba')}>
+                  <Text style={[styles.valueText, { color: '#FF6B6B', textDecorationLine: 'underline' }]}>https://github.com/juanramirez871/learning-languages-kotoba</Text>
                 </TouchableOpacity>
               </View>
 
