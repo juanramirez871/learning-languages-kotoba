@@ -70,6 +70,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose
                 <Ionicons name="notifications-outline" size={20} color="#FF6B6B" />
                 <Text style={styles.sectionTitle}>Notificaciones</Text>
               </View>
+
+              <View style={styles.settingRow}>
+                <Text style={styles.settingLabel}>Habilitar notificaciones</Text>
+                <Switch 
+                  value={isNotificationsEnabled} 
+                  onValueChange={setNotificationsEnabled} 
+                  trackColor={{ true: '#FF6B6B', false: '#ccc' }} 
+                />
+              </View>
               
               <View style={styles.settingRow}>
                 <Text style={styles.settingLabel}>Frecuencia diaria</Text>
@@ -85,15 +94,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose
                   <Text style={styles.valueText}>09:00 - 21:00</Text>
                   <Ionicons name="chevron-forward" size={16} color="#999" />
                 </View>
-              </View>
-
-              <View style={styles.settingRow}>
-                <Text style={styles.settingLabel}>Habilitar notificaciones</Text>
-                <Switch 
-                  value={isNotificationsEnabled} 
-                  onValueChange={setNotificationsEnabled} 
-                  trackColor={{ true: '#FF6B6B', false: '#ccc' }} 
-                />
               </View>
             </View>
 
