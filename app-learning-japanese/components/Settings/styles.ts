@@ -82,6 +82,52 @@ export const styles = StyleSheet.create({
   valueText: {
     fontSize: 14,
     color: '#666',
+    textAlign: 'center',
+  },
+  valueTextNumeric: {
+    minWidth: 30,
     marginRight: 5,
+  },
+  separatorText: {
+    fontSize: 14,
+    color: '#666',
+    marginHorizontal: 8,
+  },
+  valueTextActive: {
+    color: '#FF6B6B',
+    fontWeight: 'bold',
+  },
+  timeButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    backgroundColor: '#F0F0F0',
+    minWidth: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  timeButtonActive: {
+    backgroundColor: '#FFE3E3',
+  },
+  pickerContainer: {
+    backgroundColor: '#FFF',
+    marginTop: 10,
+    borderRadius: 12,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
+  },
+  pickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 10,
+    backgroundColor: '#F9F9F9',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  doneButtonText: {
+    color: '#FF6B6B',
+    fontWeight: '600',
+    fontSize: 16,
   },
 });

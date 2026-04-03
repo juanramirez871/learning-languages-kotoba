@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Modal,
   View,
@@ -6,12 +6,15 @@ import {
   TouchableOpacity,
   Switch,
   ScrollView,
+  TextInput,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './styles';
 import { Linking } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useSettings } from '@/context/SettingsContext';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 interface SettingsModalProps {
@@ -24,8 +27,39 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose
     isSoundEnabled, 
     setSoundEnabled, 
     isNotificationsEnabled, 
-    setNotificationsEnabled 
+    setNotificationsEnabled,
+    dailyFrequency,
+    setDailyFrequency,
+    startTime,
+    setStartTime,
+    endTime,
+    setEndTime,
   } = useSettings();
+
+  const [showPicker, setShowPicker] = useState<'start' | 'end' | null>(null);
+
+  const onTimeChange = (event: any, selectedDate?: Date) => {
+
+    if (Platform.OS === 'android') setShowPicker(null);
+    if (selectedDate) {
+      const hours = selectedDate.getHours().toString().padStart(2, '0');
+      const minutes = selectedDate.getMinutes().toString().padStart(2, '0');
+      const timeString = `${hours}:${minutes}`;
+      
+      if (showPicker === 'start') setStartTime(timeString)
+      else setEndTime(timeString);
+    }
+  };
+
+  const getPickerDate = () => {
+    const timeStr = showPicker === 'start' ? startTime : endTime;
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const date = new Date();
+    
+    date.setHours(hours);
+    date.setMinutes(minutes);
+    return date;
+  };
 
   return (
     <Modal
@@ -83,18 +117,57 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose
               <View style={styles.settingRow}>
                 <Text style={styles.settingLabel}>Frecuencia diaria</Text>
                 <View style={styles.valueContainer}>
-                  <Text style={styles.valueText}>5 veces</Text>
-                  <Ionicons name="chevron-forward" size={16} color="#999" />
+                  <TextInput
+                    style={[styles.valueText, styles.valueTextNumeric]}
+                    value={dailyFrequency.toString()}
+                    onChangeText={(text) => {
+                      const num = parseInt(text);
+                      if (!isNaN(num)) setDailyFrequency(num);
+                      else if (text === "") setDailyFrequency(0);
+                    }}
+                    keyboardType="numeric"
+                  />
+                  <Text style={styles.valueText}>veces</Text>
                 </View>
               </View>
 
               <View style={styles.settingRow}>
                 <Text style={styles.settingLabel}>Rango de horas</Text>
                 <View style={styles.valueContainer}>
-                  <Text style={styles.valueText}>09:00 - 21:00</Text>
-                  <Ionicons name="chevron-forward" size={16} color="#999" />
+                  <TouchableOpacity 
+                    onPress={() => setShowPicker(showPicker === 'start' ? null : 'start')}
+                    style={[styles.timeButton, showPicker === 'start' && styles.timeButtonActive]}
+                  >
+                    <Text style={[styles.valueText, showPicker === 'start' && styles.valueTextActive]}>{startTime}</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.separatorText}>-</Text>
+                  <TouchableOpacity 
+                    onPress={() => setShowPicker(showPicker === 'end' ? null : 'end')}
+                    style={[styles.timeButton, showPicker === 'end' && styles.timeButtonActive]}
+                  >
+                    <Text style={[styles.valueText, showPicker === 'end' && styles.valueTextActive]}>{endTime}</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
+
+              {showPicker && (
+                <View style={styles.pickerContainer}>
+                  {Platform.OS === 'ios' && (
+                    <View style={styles.pickerHeader}>
+                      <TouchableOpacity onPress={() => setShowPicker(null)}>
+                        <Text style={styles.doneButtonText}>Listo</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                  <DateTimePicker
+                    value={getPickerDate()}
+                    mode="time"
+                    is24Hour={true}
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    onChange={onTimeChange}
+                  />
+                </View>
+              )}
             </View>
 
             <View style={styles.section}>
