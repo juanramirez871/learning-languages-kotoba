@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef, useEffect, memo, forwardRef, useImperativeHandle } from "react";
-import { View, Text, TouchableOpacity, Animated } from "react-native";
+import React, { useState, useCallback, useRef, useEffect, memo, forwardRef, useImperativeHandle, useMemo } from "react";
+import { View, Text, TouchableOpacity, Animated, Image as RNImage } from "react-native";
 import { Image } from "expo-image";
 import { PET_ANIMATIONS } from "@/constants/petAnimations";
 import { createSound } from "@/utils/elevenlabs";
@@ -24,16 +24,34 @@ export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>(({ type =
   const animationRef = useRef<any>(null);
   const bubbleTimeoutRef = useRef<any>(null);
   const bubbleAnim = useRef(new Animated.Value(0)).current;
-
-  const stayAnimation = type === "japanese" ? PET_ANIMATIONS.stay : PET_ANIMATIONS.stayCat;
-  const jumpAnimations = type === "japanese" ? PET_ANIMATIONS.jump : PET_ANIMATIONS.jumpCat;
+  const stayAnimation = useMemo(() => 
+    RNImage.resolveAssetSource(type === "japanese" ? PET_ANIMATIONS.stay : PET_ANIMATIONS.stayCat),
+    [type]
+  );
+  
+  const jumpAnimations = useMemo(() => 
+    (type === "japanese" ? PET_ANIMATIONS.jump : PET_ANIMATIONS.jumpCat).map(asset => RNImage.resolveAssetSource(asset)),
+    [type]
+  );
 
   useEffect(() => {
+    const prefetchImages = async () => {
+      try {
+        const uris = jumpAnimations.map(asset => asset.uri).filter(uri => !!uri);
+        if (uris.length > 0) await Image.prefetch(uris);
+      }
+      catch (err) {
+        console.warn("Error prefetching images:", err);
+      }
+    };
+    
+    prefetchImages();
+
     return () => {
-      if (animationRef.current) clearInterval(animationRef.current);
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
       if (bubbleTimeoutRef.current) clearTimeout(bubbleTimeoutRef.current);
     };
-  }, []);
+  }, [jumpAnimations]);
 
   const showBubble = useCallback((data: { primary: string; secondary?: string; extra?: string; soundText: string }) => {
 
@@ -67,27 +85,34 @@ export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>(({ type =
   }, [bubbleAnim, isSoundEnabled]);
 
   const handleJump = useCallback((data?: { primary: string; secondary?: string; extra?: string; soundText: string }) => {
-
     if (isJumping) return false;
+    
     setIsJumping(true);
     setJumpFrame(0);
 
     if (data) showBubble(data);
-    if (animationRef.current) clearInterval(animationRef.current);
-    let frame = 0;
+    
     const totalFrames = jumpAnimations.length;
+    let frame = 0;
+    const startTime = Date.now();
+    const frameDuration = 24;
 
-    animationRef.current = setInterval(() => {
-      frame++;
-      if (frame < totalFrames) setJumpFrame(frame);
-      else {
-        if (animationRef.current) clearInterval(animationRef.current);
-        animationRef.current = null;
+    const animate = () => {
+      const now = Date.now();
+      const elapsed = now - startTime;
+      const nextFrame = Math.floor(elapsed / frameDuration);
+
+      if (nextFrame < totalFrames) {
+        setJumpFrame(nextFrame);
+        animationRef.current = requestAnimationFrame(animate);
+      } else {
         setIsJumping(false);
         setJumpFrame(0);
+        animationRef.current = null;
       }
-    }, 24);
+    };
 
+    animationRef.current = requestAnimationFrame(animate);
     return true;
   }, [isJumping, showBubble, jumpAnimations.length]);
 
