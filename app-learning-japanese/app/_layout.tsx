@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
 import { SettingsProvider } from "../context/SettingsContext";
+import "@/utils/notificationService";
 
 export default function RootLayout() {
   return (

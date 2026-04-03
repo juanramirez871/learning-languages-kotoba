@@ -81,8 +81,7 @@ export const styles = StyleSheet.create({
   },
   valueText: {
     fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
+    color: '#666'
   },
   valueTextNumeric: {
     minWidth: 30,
