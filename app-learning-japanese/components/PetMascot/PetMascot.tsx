@@ -37,9 +37,10 @@ export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>((props, r
     
     setCurrentWord(data);
     if (isSoundEnabled) {
-      createSound(data.soundText);
+      createSound(data.soundText).catch(err => console.error("Error playing sound:", err));
     }
 
+    bubbleAnim.stopAnimation();
     Animated.spring(bubbleAnim, {
       toValue: 1,
       useNativeDriver: true,
@@ -52,9 +53,11 @@ export const PetMascot = memo(forwardRef<PetMascotRef, PetMascotProps>((props, r
         toValue: 0,
         duration: 500,
         useNativeDriver: true,
-      }).start(() => {
-        setCurrentWord(null);
-        bubbleTimeoutRef.current = null;
+      }).start(({ finished }) => {
+        if (finished) {
+          setCurrentWord(null);
+          bubbleTimeoutRef.current = null;
+        }
       });
     }, 3000);
   }, [bubbleAnim, isSoundEnabled]);
