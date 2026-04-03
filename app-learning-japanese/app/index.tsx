@@ -58,12 +58,24 @@ export default function Index() {
 
   return (
     <LinearGradient
-      colors={["#DFF0FF", "#F9ECF4", "#FFF7EC"]}
+      colors={["#FFFFFF", "#F2F9FF", "#FEF2F6"]}
+      locations={[0, 0.4, 1]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.gradient}
     >
       <StatusBar barStyle="dark-content" />
+
+      <View style={[styles.decorLine, { top: '15%', left: 0, right: 0, height: 1 }]} />
+      <View style={[styles.decorLine, { top: 0, bottom: 0, left: '10%', width: 1 }]} />
+      
+      <Text style={[styles.decorText, { top: '5%', right: '5%', fontSize: 120 }]}>A</Text>
+      <Text style={[styles.decorText, { top: '45%', left: '-10%', fontSize: 180 }]}>あ</Text>
+      <Text style={[styles.decorText, { bottom: '20%', right: '-5%', fontSize: 150 }]}>Z</Text>
+      <Text style={[styles.decorText, { bottom: '5%', left: '15%', fontSize: 100 }]}>ん</Text>
+
+      <View style={[styles.accent, { top: -50, left: -50, width: 300, height: 300 }]} />
+      <View style={[styles.accent, { bottom: '15%', right: -80, width: 250, height: 250, backgroundColor: 'rgba(255, 182, 193, 0.05)' }]} />
 
       <View style={styles.header}>
         <Text style={styles.title}>¿Qué idioma{"\n"}quieres aprender hoy?</Text>
