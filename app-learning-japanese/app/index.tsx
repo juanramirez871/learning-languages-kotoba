@@ -81,7 +81,7 @@ export default function Index() {
       </View>
 
       <View style={styles.imageContainer}>
-        <Image source={require("../assets/images/marin-studing.png")} style={styles.image} />
+        <Image source={require("../assets/images/icon-studing.png")} style={styles.image} />
       </View>
     </LinearGradient>
   );

@@ -1,15 +1,16 @@
 {
   "expo": {
-    "name": "app-learning-japanese",
-    "slug": "app-learning-japanese",
+    "name": "Kotoba",
+    "slug": "kotoba",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "applearningjapanese",
+    "scheme": "kotoba",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.juan098.Kotoba"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +20,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.juan098.Kotoba"
     },
     "web": {
       "output": "static",
