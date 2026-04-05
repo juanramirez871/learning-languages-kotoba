@@ -9,7 +9,7 @@ const { height } = Dimensions.get('window');
 export const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
   dismissArea: {

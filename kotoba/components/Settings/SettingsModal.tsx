@@ -165,6 +165,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose
                     is24Hour={true}
                     display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                     onChange={onTimeChange}
+                    themeVariant="light"
                   />
                 </View>
               )}
