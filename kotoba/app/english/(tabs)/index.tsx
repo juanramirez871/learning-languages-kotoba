@@ -47,6 +47,7 @@ export default function EnglishWordsScreen() {
       </TouchableOpacity>
       
       <BackgroundDecor backgroundColor="#F0F4FD" characters={["A", "Z"]} />
+      <PetMascot ref={petRef} type="english" onPressWithoutWord={handlePetPress} />
       {floatingWords.map((word) => (
         <FloatingWordItem
           key={word.id}
@@ -58,7 +59,6 @@ export default function EnglishWordsScreen() {
           onPress={() => handleWordPress(word)}
         />
       ))}
-      <PetMascot ref={petRef} type="english" onPressWithoutWord={handlePetPress} />
 
       <SettingsModal 
         isVisible={isSettingsVisible} 

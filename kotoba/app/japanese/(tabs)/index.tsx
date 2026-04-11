@@ -51,6 +51,7 @@ export default function JapaneseWordsScreen() {
       </TouchableOpacity>
       
       <BackgroundDecor characters={["夢", "犬"]} />
+      <PetMascot ref={petRef} type="japanese" onPressWithoutWord={handlePetPress} />
       {floatingWords.map((word) => (
         <FloatingWordItem
           key={word.id}
@@ -63,7 +64,6 @@ export default function JapaneseWordsScreen() {
           onPress={() => handleWordPress(word)}
         />
       ))}
-      <PetMascot ref={petRef} type="japanese" onPressWithoutWord={handlePetPress} />
 
       <SettingsModal 
         isVisible={isSettingsVisible} 
