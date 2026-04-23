@@ -1,63 +1,71 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-  gradient: {
+  container: {
     flex: 1,
-    paddingTop: 64,
-    paddingHorizontal: 22,
-    paddingBottom: 32,
-    overflow: "hidden",
+    backgroundColor: "#FAF9F6",
   },
-  header: {
-    marginBottom: 32,
-    marginTop: 32,
+  topBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 26,
+    paddingTop: 64,
+    paddingBottom: 8,
+  },
+  logoWrapper: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 3,
+  },
+  logoText: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#1C1C1E",
+    letterSpacing: -0.6,
+  },
+  logoDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: "#FF4D6D",
+    marginTop: 3,
+  },
+  hero: {
+    paddingHorizontal: 26,
+    paddingTop: 28,
+    paddingBottom: 32,
+  },
+  tagline: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#AAAAAA",
+    letterSpacing: 2.5,
+    marginBottom: 12,
   },
   title: {
-    fontSize: 32,
+    fontSize: 38,
     fontWeight: "800",
-    color: "#1a1a1a",
-    lineHeight: 38,
-    marginBottom: 8,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: "#888780",
-    fontWeight: "400",
+    color: "#1C1C1E",
+    lineHeight: 44,
+    letterSpacing: -1,
   },
   cardsContainer: {
-    gap: 16,
+    paddingHorizontal: 20,
+    gap: 14,
   },
-  imageContainer: {
+  mascotContainer: {
     position: "absolute",
-    bottom: -30,
-    left: 0,
+    bottom: 0,
     right: 0,
-    alignItems: "center",
+    width: 140,
+    height: 140,
+    zIndex: 0,
+    opacity: 0.92,
   },
-  image: {
-    width: 300,
-    height: 300,
+  mascotImage: {
+    width: "100%",
+    height: "100%",
     resizeMode: "contain",
-  },
-  decorText: {
-    position: "absolute",
-    color: "#000",
-    opacity: 0.03,
-    fontWeight: "900",
-    zIndex: -1,
-  },
-  decorLine: {
-    position: "absolute",
-    backgroundColor: "#000",
-    opacity: 0.03,
-    zIndex: -1,
-  },
-  accent: {
-    position: "absolute",
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: "rgba(0, 0, 0, 0.02)",
-    zIndex: -1,
   },
 });

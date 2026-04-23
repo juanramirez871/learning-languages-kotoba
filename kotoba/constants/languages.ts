@@ -21,22 +21,7 @@ export type Language = {
 };
 
 export const LANGUAGES: Language[] = [
-  {
-    key: "english",
-    label: "English",
-    subtitle: "Speak to the world",
-    bgColor: "#EAF4FF",
-    borderColor: "#B5D4F4",
-    accentColor: "#185FA5",
-    badgeBg: "#B5D4F4",
-    badgeText: "#0C447C",
-    image: require("../assets/images/england-flag.jpg"),
-    tabs: [
-      { id: "index", label: "Words", icon: "book-outline" },
-      { id: "alphabet", label: "Alphabet", icon: "alphabetical" },
-    ],
-  },
-  {
+    {
     key: "japanese",
     label: "Japonés",
     subtitle: "世界と話しましょう",
@@ -52,4 +37,19 @@ export const LANGUAGES: Language[] = [
       { id: "katakana", label: "片仮名", sublabel: "katakana", icon: "syllabary-katakana" },
     ],
   },
+  {
+    key: "english",
+    label: "English",
+    subtitle: "Speak to the world",
+    bgColor: "#EAF4FF",
+    borderColor: "#B5D4F4",
+    accentColor: "#185FA5",
+    badgeBg: "#B5D4F4",
+    badgeText: "#0C447C",
+    image: require("../assets/images/england-flag.png"),
+    tabs: [
+      { id: "index", label: "Words", icon: "book-outline" },
+      { id: "alphabet", label: "Alphabet", icon: "alphabetical" },
+    ],
+  }
 ];
