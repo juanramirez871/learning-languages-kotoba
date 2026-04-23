@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Dimensions } from "react-native";
 
 const { height } = Dimensions.get("window");
@@ -17,6 +17,8 @@ interface UseFloatingWordsOptions {
   minTop?: number;
   maxTop?: number;
   laneHeight?: number;
+  pickWord?: (wordsList: any[]) => any;
+  onWordPassed?: (wordData: any) => void;
 }
 
 export function useFloatingWords({
@@ -26,10 +28,27 @@ export function useFloatingWords({
   minTop = 80,
   maxTop = height * 0.70,
   laneHeight = 70,
+  pickWord,
+  onWordPassed,
 }: UseFloatingWordsOptions) {
 
   const [floatingWords, setFloatingWords] = useState<FloatingWord[]>([]);
+  const floatingWordsRef = useRef<FloatingWord[]>([]);
+  const pickWordRef = useRef(pickWord);
+  const onWordPassedRef = useRef(onWordPassed);
+
+  useEffect(() => { floatingWordsRef.current = floatingWords; }, [floatingWords]);
+  useEffect(() => { pickWordRef.current = pickWord; }, [pickWord]);
+  useEffect(() => { onWordPassedRef.current = onWordPassed; }, [onWordPassed]);
   const removeFloatingWord = useCallback((id: number) => {
+    setFloatingWords((prev) => prev.filter((w) => w.id !== id));
+  }, []);
+
+  const completeFloatingWord = useCallback((id: number) => {
+    const word = floatingWordsRef.current.find((w) => w.id === id);
+    if (word) {
+      onWordPassedRef.current?.(word.data);
+    }
     setFloatingWords((prev) => prev.filter((w) => w.id !== id));
   }, []);
 
@@ -40,21 +59,25 @@ export function useFloatingWords({
         lanes.push(top);
       }
 
-      const availableLanes = lanes.filter(lane => 
+      const availableLanes = lanes.filter(lane =>
         !prev.some(word => Math.abs(word.top - lane) < laneHeight - 10)
       );
 
       if (availableLanes.length === 0 || prev.length >= maxWords) return prev;
 
       const finalTop = availableLanes[Math.floor(Math.random() * availableLanes.length)];
-      const randomIndex = Math.floor(Math.random() * wordsList.length);
-      const newWord: FloatingWord = { 
+      const picker = pickWordRef.current;
+      const selectedData = picker
+        ? picker(wordsList)
+        : wordsList[Math.floor(Math.random() * wordsList.length)];
+
+      const newWord: FloatingWord = {
         id: Date.now() + Math.random(),
         top: finalTop,
         duration: Math.random() * 4000 + 10000,
-        data: wordsList[randomIndex]
+        data: selectedData,
       };
-      
+
       return [...prev, newWord];
     });
   }, [wordsList, maxWords, minTop, maxTop, laneHeight]);
@@ -74,5 +97,5 @@ export function useFloatingWords({
     };
   }, [addFloatingWord, intervalTime]);
 
-  return { floatingWords, removeFloatingWord };
+  return { floatingWords, removeFloatingWord, completeFloatingWord };
 }

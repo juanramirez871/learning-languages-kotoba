@@ -2,15 +2,23 @@ import React, { useCallback, useRef, useState } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import words from "../../../constants/englishWords.json";
 import { useFloatingWords } from "@/hooks/useFloatingWords";
+import { useWordProgress } from "@/hooks/useWordProgress";
 import { FloatingWordItem } from "@/components/FloatingWords/FloatingWordItem";
 import { PetMascot, PetMascotRef } from "@/components/PetMascot/PetMascot";
 import { BackgroundDecor } from "@/components/BackgroundDecor/BackgroundDecor";
 import { Ionicons } from '@expo/vector-icons';
 import { SettingsModal } from "@/components/Settings";
 
+const getKey = (word: any) => word.word;
+
 export default function EnglishWordsScreen() {
 
-  const { floatingWords, removeFloatingWord } = useFloatingWords({ wordsList: words });
+  const { pickWord, onWordTapped, onWordPassed } = useWordProgress("english", getKey);
+  const { floatingWords, removeFloatingWord, completeFloatingWord } = useFloatingWords({
+    wordsList: words,
+    pickWord,
+    onWordPassed,
+  });
   const petRef = useRef<PetMascotRef>(null);
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
 
@@ -20,16 +28,17 @@ export default function EnglishWordsScreen() {
       extra: word.data.spanish,
       soundText: word.data.word
     });
-    
+
     if (started) {
+      onWordTapped(word.data);
       removeFloatingWord(word.id);
     }
-  }, [removeFloatingWord]);
+  }, [removeFloatingWord, onWordTapped]);
 
   const handlePetPress = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * words.length);
     const randomWord = words[randomIndex];
-    
+
     petRef.current?.triggerJump({
       primary: randomWord.word,
       extra: randomWord.spanish,
@@ -39,13 +48,13 @@ export default function EnglishWordsScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
-        style={styles.settingsIcon} 
+      <TouchableOpacity
+        style={styles.settingsIcon}
         onPress={() => setIsSettingsVisible(true)}
       >
         <Ionicons name="settings" size={24} color="black" />
       </TouchableOpacity>
-      
+
       <BackgroundDecor backgroundColor="#F0F4FD" characters={["A", "Z"]} />
       <PetMascot ref={petRef} type="english" onPressWithoutWord={handlePetPress} />
       {floatingWords.map((word) => (
@@ -55,14 +64,14 @@ export default function EnglishWordsScreen() {
           top={word.top}
           duration={word.duration}
           primaryText={word.data.word}
-          onComplete={removeFloatingWord}
+          onComplete={completeFloatingWord}
           onPress={() => handleWordPress(word)}
         />
       ))}
 
-      <SettingsModal 
-        isVisible={isSettingsVisible} 
-        onClose={() => setIsSettingsVisible(false)} 
+      <SettingsModal
+        isVisible={isSettingsVisible}
+        onClose={() => setIsSettingsVisible(false)}
       />
     </View>
   );
