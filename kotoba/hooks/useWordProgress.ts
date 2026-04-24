@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { NativeModules } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Language = "english" | "japanese";
@@ -8,6 +9,9 @@ const SCORE_PASS = 1;
 const MIN_SCORE = -100;
 const MAX_SCORE = 100;
 const MIN_WEIGHT = 5;
+const LOW_SCORE_POOL = 20;
+
+const { SharedPreferencesModule } = NativeModules;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -30,8 +34,10 @@ export function useWordProgress(language: Language, getKey: (word: any) => strin
   }, [storageKey]);
 
   const saveScores = useCallback(() => {
-    AsyncStorage.setItem(storageKey, JSON.stringify(scoresRef.current));
-  }, [storageKey]);
+    const json = JSON.stringify(scoresRef.current);
+    AsyncStorage.setItem(storageKey, json);
+    SharedPreferencesModule?.setWordScores(language, json);
+  }, [storageKey, language]);
 
   const onWordTapped = useCallback((wordData: any) => {
     const key = getKey(wordData);
@@ -68,5 +74,20 @@ export function useWordProgress(language: Language, getKey: (word: any) => strin
     return wordsList[wordsList.length - 1];
   }, [loaded, getKey]);
 
-  return { pickWord, onWordTapped, onWordPassed };
+  const pickLowScoreWord = useCallback((wordsList: any[]) => {
+    if (!loaded || wordsList.length === 0) {
+      return wordsList[Math.floor(Math.random() * wordsList.length)];
+    }
+
+    const sorted = [...wordsList].sort((a, b) => {
+      const scoreA = scoresRef.current[getKey(a)] ?? 0;
+      const scoreB = scoresRef.current[getKey(b)] ?? 0;
+      return scoreA - scoreB;
+    });
+
+    const pool = sorted.slice(0, Math.min(LOW_SCORE_POOL, sorted.length));
+    return pool[Math.floor(Math.random() * pool.length)];
+  }, [loaded, getKey]);
+
+  return { pickWord, pickLowScoreWord, onWordTapped, onWordPassed };
 }

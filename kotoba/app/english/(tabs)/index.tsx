@@ -13,7 +13,7 @@ const getKey = (word: any) => word.word;
 
 export default function EnglishWordsScreen() {
 
-  const { pickWord, onWordTapped, onWordPassed } = useWordProgress("english", getKey);
+  const { pickWord, pickLowScoreWord, onWordTapped, onWordPassed } = useWordProgress("english", getKey);
   const { floatingWords, removeFloatingWord, completeFloatingWord } = useFloatingWords({
     wordsList: words,
     pickWord,
@@ -36,15 +36,15 @@ export default function EnglishWordsScreen() {
   }, [removeFloatingWord, onWordTapped]);
 
   const handlePetPress = useCallback(() => {
-    const randomIndex = Math.floor(Math.random() * words.length);
-    const randomWord = words[randomIndex];
+    const word = pickLowScoreWord(words);
+    if (!word) return;
 
     petRef.current?.triggerJump({
-      primary: randomWord.word,
-      extra: randomWord.spanish,
-      soundText: randomWord.word
+      primary: word.word,
+      extra: word.spanish,
+      soundText: word.word
     });
-  }, []);
+  }, [pickLowScoreWord]);
 
   return (
     <View style={styles.container}>

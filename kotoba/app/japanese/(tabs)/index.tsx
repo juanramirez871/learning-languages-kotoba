@@ -13,7 +13,7 @@ const getKey = (word: any) => word.japanese;
 
 export default function JapaneseWordsScreen() {
 
-  const { pickWord, onWordTapped, onWordPassed } = useWordProgress("japanese", getKey);
+  const { pickWord, pickLowScoreWord, onWordTapped, onWordPassed } = useWordProgress("japanese", getKey);
   const { floatingWords, removeFloatingWord, completeFloatingWord } = useFloatingWords({
     wordsList: words,
     pickWord,
@@ -37,16 +37,16 @@ export default function JapaneseWordsScreen() {
   }, [removeFloatingWord, onWordTapped]);
 
   const handlePetPress = useCallback(() => {
-    const randomIndex = Math.floor(Math.random() * words.length);
-    const randomWord = words[randomIndex];
+    const word = pickLowScoreWord(words);
+    if (!word) return;
 
     petRef.current?.triggerJump({
-      primary: randomWord.japanese,
-      secondary: randomWord.pronounciation,
-      extra: randomWord.spanish,
-      soundText: randomWord.pronounciation
+      primary: word.japanese,
+      secondary: word.pronounciation,
+      extra: word.spanish,
+      soundText: word.pronounciation
     });
-  }, []);
+  }, [pickLowScoreWord]);
 
   return (
     <View style={styles.container}>

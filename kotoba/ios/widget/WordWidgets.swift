@@ -6,7 +6,7 @@ import SwiftUI
 struct WordBadge: View {
     let text: String
     let color: Color
-    
+
     var body: some View {
         Text(text)
             .font(.system(size: 10, weight: .bold, design: .rounded))
@@ -23,25 +23,25 @@ struct WordRow: View {
     let pronunciation: String?
     let spanish: String
     let color: Color
-    
+
     var body: some View {
         HStack(spacing: 8) {
             RoundedRectangle(cornerRadius: 2)
                 .fill(color.opacity(0.3))
                 .frame(width: 3)
-            
+
             VStack(alignment: .leading, spacing: 0) {
                 Text(word)
                     .font(.system(size: 17, weight: .bold, design: .rounded))
                     .foregroundColor(.primary)
-                
+
                 if let pron = pronunciation {
                     Text(pron)
                         .font(.system(size: 11, design: .serif))
                         .italic()
                         .foregroundColor(.secondary)
                 }
-                
+
                 Text(spanish)
                     .font(.system(size: 13, weight: .medium, design: .rounded))
                     .foregroundColor(.secondary)
@@ -60,28 +60,25 @@ struct JapaneseProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (JapaneseEntry) -> ()) {
-        let words = WordLoader.loadJapaneseWords()
-        let word1 = words.randomElement() ?? JapaneseWord(japanese: "日本語", pronounciation: "nihongo", spanish: "Japonés")
-        let word2 = words.randomElement() ?? JapaneseWord(japanese: "日本語", pronounciation: "nihongo", spanish: "Japonés")
-        let entry = JapaneseEntry(date: Date(), word1: word1, word2: word2)
-        completion(entry)
+        let fallback = JapaneseWord(japanese: "日本語", pronounciation: "nihongo", spanish: "Japonés")
+        let word1 = WordLoader.pickLowScoreJapanese() ?? fallback
+        let word2 = WordLoader.pickLowScoreJapanese() ?? fallback
+        completion(JapaneseEntry(date: Date(), word1: word1, word2: word2))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<JapaneseEntry>) -> ()) {
+        let fallback = JapaneseWord(japanese: "日本語", pronounciation: "nihongo", spanish: "Japonés")
         var entries: [JapaneseEntry] = []
-        let words = WordLoader.loadJapaneseWords()
         let currentDate = Date()
-        
+
         for hourOffset in 0 ..< 5 {
             let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let word1 = words.randomElement() ?? JapaneseWord(japanese: "日本語", pronounciation: "nihongo", spanish: "Japonés")
-            let word2 = words.randomElement() ?? JapaneseWord(japanese: "日本語", pronounciation: "nihongo", spanish: "Japonés")
-            let entry = JapaneseEntry(date: entryDate, word1: word1, word2: word2)
-            entries.append(entry)
+            let word1 = WordLoader.pickLowScoreJapanese() ?? fallback
+            let word2 = WordLoader.pickLowScoreJapanese() ?? fallback
+            entries.append(JapaneseEntry(date: entryDate, word1: word1, word2: word2))
         }
 
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
+        completion(Timeline(entries: entries, policy: .atEnd))
     }
 }
 
@@ -98,17 +95,17 @@ struct JapaneseWordWidgetEntryView : View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             VStack(alignment: .leading, spacing: 12) {
-                WordRow(word: entry.word1.japanese, 
-                        pronunciation: "[\(entry.word1.pronounciation)]", 
-                        spanish: entry.word1.spanish, 
+                WordRow(word: entry.word1.japanese,
+                        pronunciation: "[\(entry.word1.pronounciation)]",
+                        spanish: entry.word1.spanish,
                         color: .red)
-                
+
                 if family != .systemSmall || entry.word2.japanese != entry.word1.japanese {
                     Divider().background(Color.red.opacity(0.1))
-                    
-                    WordRow(word: entry.word2.japanese, 
-                            pronunciation: "[\(entry.word2.pronounciation)]", 
-                            spanish: entry.word2.spanish, 
+
+                    WordRow(word: entry.word2.japanese,
+                            pronunciation: "[\(entry.word2.pronounciation)]",
+                            spanish: entry.word2.spanish,
                             color: .red)
                 }
             }
@@ -118,8 +115,8 @@ struct JapaneseWordWidgetEntryView : View {
         .containerBackground(for: .widget) {
             ZStack {
                 Color(.systemBackground)
-                LinearGradient(colors: [Color.red.opacity(0.05), Color.clear], 
-                               startPoint: .topLeading, 
+                LinearGradient(colors: [Color.red.opacity(0.05), Color.clear],
+                               startPoint: .topLeading,
                                endPoint: .bottomTrailing)
             }
         }
@@ -148,28 +145,25 @@ struct EnglishProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (EnglishEntry) -> ()) {
-        let words = WordLoader.loadEnglishWords()
-        let word1 = words.randomElement() ?? EnglishWord(word: "Hello", spanish: "Hola")
-        let word2 = words.randomElement() ?? EnglishWord(word: "Hello", spanish: "Hola")
-        let entry = EnglishEntry(date: Date(), word1: word1, word2: word2)
-        completion(entry)
+        let fallback = EnglishWord(word: "Hello", spanish: "Hola")
+        let word1 = WordLoader.pickLowScoreEnglish() ?? fallback
+        let word2 = WordLoader.pickLowScoreEnglish() ?? fallback
+        completion(EnglishEntry(date: Date(), word1: word1, word2: word2))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<EnglishEntry>) -> ()) {
+        let fallback = EnglishWord(word: "Hello", spanish: "Hola")
         var entries: [EnglishEntry] = []
-        let words = WordLoader.loadEnglishWords()
         let currentDate = Date()
-        
+
         for hourOffset in 0 ..< 5 {
             let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let word1 = words.randomElement() ?? EnglishWord(word: "Hello", spanish: "Hola")
-            let word2 = words.randomElement() ?? EnglishWord(word: "Hello", spanish: "Hola")
-            let entry = EnglishEntry(date: entryDate, word1: word1, word2: word2)
-            entries.append(entry)
+            let word1 = WordLoader.pickLowScoreEnglish() ?? fallback
+            let word2 = WordLoader.pickLowScoreEnglish() ?? fallback
+            entries.append(EnglishEntry(date: entryDate, word1: word1, word2: word2))
         }
 
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
+        completion(Timeline(entries: entries, policy: .atEnd))
     }
 }
 
@@ -186,17 +180,17 @@ struct EnglishWordWidgetEntryView : View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             VStack(alignment: .leading, spacing: 12) {
-                WordRow(word: entry.word1.word, 
-                        pronunciation: nil, 
-                        spanish: entry.word1.spanish, 
+                WordRow(word: entry.word1.word,
+                        pronunciation: nil,
+                        spanish: entry.word1.spanish,
                         color: .blue)
-                
+
                 if family != .systemSmall || entry.word2.word != entry.word1.word {
                     Divider().background(Color.blue.opacity(0.1))
-                    
-                    WordRow(word: entry.word2.word, 
-                            pronunciation: nil, 
-                            spanish: entry.word2.spanish, 
+
+                    WordRow(word: entry.word2.word,
+                            pronunciation: nil,
+                            spanish: entry.word2.spanish,
                             color: .blue)
                 }
             }
@@ -206,8 +200,8 @@ struct EnglishWordWidgetEntryView : View {
         .containerBackground(for: .widget) {
             ZStack {
                 Color(.systemBackground)
-                LinearGradient(colors: [Color.blue.opacity(0.05), Color.clear], 
-                               startPoint: .topLeading, 
+                LinearGradient(colors: [Color.blue.opacity(0.05), Color.clear],
+                               startPoint: .topLeading,
                                endPoint: .bottomTrailing)
             }
         }

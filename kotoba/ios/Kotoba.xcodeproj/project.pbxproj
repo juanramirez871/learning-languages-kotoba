@@ -17,6 +17,8 @@
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		C89DA60B440C493ADAA0B800 /* libPods-Kotoba.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5A4188ADCD1AA3F9DB5C50 /* libPods-Kotoba.a */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
+		AA00001111222233334444AA /* SharedPreferencesModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00001111222233334444BB /* SharedPreferencesModule.swift */; };
+		AA00001111222233334444CC /* SharedPreferencesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = AA00001111222233334444DD /* SharedPreferencesModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +60,8 @@
 		D51D93226389EB43CAF43919 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Kotoba/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Kotoba/AppDelegate.swift; sourceTree = "<group>"; };
+		AA00001111222233334444BB /* SharedPreferencesModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SharedPreferencesModule.swift; path = Kotoba/SharedPreferencesModule.swift; sourceTree = "<group>"; };
+		AA00001111222233334444DD /* SharedPreferencesModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = SharedPreferencesModule.m; path = Kotoba/SharedPreferencesModule.m; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* Kotoba-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Kotoba-Bridging-Header.h"; path = "Kotoba/Kotoba-Bridging-Header.h"; sourceTree = "<group>"; };
 		F268AAF15B2A74D38E920F5C /* Pods-Kotoba.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kotoba.debug.xcconfig"; path = "Target Support Files/Pods-Kotoba/Pods-Kotoba.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -109,6 +113,8 @@
 			isa = PBXGroup;
 			children = (
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
+				AA00001111222233334444BB /* SharedPreferencesModule.swift */,
+				AA00001111222233334444DD /* SharedPreferencesModule.m */,
 				F11748442D0722820044C1D9 /* Kotoba-Bridging-Header.h */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -432,6 +438,8 @@
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
 				9E437EFACC235C42634B225E /* ExpoModulesProvider.swift in Sources */,
+				AA00001111222233334444AA /* SharedPreferencesModule.swift in Sources */,
+				AA00001111222233334444CC /* SharedPreferencesModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,6 +467,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = widget/widget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -507,6 +516,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = widget/widget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
